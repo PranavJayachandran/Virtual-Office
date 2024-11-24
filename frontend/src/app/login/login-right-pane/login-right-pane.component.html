@@ -1,0 +1,38 @@
+<div
+  class="flex-1 gap-5 bg-red h-screen flex flex-col justify-center items-center"
+>
+  <h2 class="text-3xl font-bold">Welcome back</h2>
+  <form class="flex flex-col gap-4 w-7/12" [formGroup]="loginForm">
+    <input
+      class="border-b rounded p-2"
+      id="userName"
+      type="text"
+      formControlName="userName"
+      placeholder="Username"
+    />
+
+    <input
+      class="border-b rounded p-2"
+      id="password"
+      type="text"
+      formControlName="password"
+      placeholder="Password"
+    />
+    <div class="flex justify-between">
+      <div class="flex gap-1">
+        <input id="remember-me" type="checkbox" formControlName="rememberMe" />
+        <label for="remember-me">Remember Me</label>
+      </div>
+      <div class="underline cursor-pointer">
+        Forgot Password?
+      </div>
+    </div>
+  </form>
+  <button
+    class="w-7/12 mt-4 bg-black text-white p-2 rounded-xl"
+    [disabled]="!loginForm.valid"
+    (click)="onSubmit()"
+  >
+    Submit
+  </button>
+</div>

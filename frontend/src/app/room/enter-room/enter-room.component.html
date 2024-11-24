@@ -1,0 +1,15 @@
+<div class="flex justify-center flex-col items-center h-screen">
+  <div class="w-4/12 max-w-96 flex flex-col gap-6">
+    <div class="gap-4 flex flex-col justify-center items-center">
+      <div class="text-2xl font-bold">Enter Room</div>
+      <input class="w-full border p-2" placeholder="Enter the room Id" [(ngModel)]="roomId">
+      <button class="bg-black w-full text-white p-2 rounded-xl" (click)="joinRoom()">Join</button>
+    </div>
+    <div class="text-center">Or</div>
+    <div>
+      <button class="bg-blue-400 p-2 text-white w-full rounded-xl" (click)="createRoom()">
+        Create a new Room
+      </button>
+    </div>
+  </div>
+</div>
