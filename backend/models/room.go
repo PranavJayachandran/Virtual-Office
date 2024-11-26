@@ -2,7 +2,14 @@
 package models
 
 type Room struct {
-  RoomId string `bson:"_id,omitempty"`;
+  RoomId string `bson:"_id" json:"id"`;
   OwnerId string `bson:"ownerId" json:"ownerId"`;
-  MemeberIds []string `bson:"memberIds" json:"memberIds`;
+  MemeberIds []roomUser `bson:"memberIds" json:"memberIds`;
 }
+
+type roomUser struct{
+  x int;
+  y int;
+  direction int;
+}
+// direction would follow the clockwise numbering starting with 0 to top
