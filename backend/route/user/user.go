@@ -21,10 +21,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Content-Type", "application/json");
   match,id := userdb.UserPasswordMatch(userData);
   if match {
-    json.NewEncoder(w).Encode(map[string]string{"msg": successFullLogin, "id": id});
+    json.NewEncoder(w).Encode(map[string]string{"id": id});
     return;
   }
-  json.NewEncoder(w).Encode(map[string]string{"msg": wrongPassWord});
+  http.Error(w, wrongPassWord, http.StatusNotFound);
 }
 func SignUpHandler(w http.ResponseWriter, r *http.Request){
   userData, err := getUserDataFromBody(r);
@@ -34,7 +34,7 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request){
   }
   w.Header().Set("Content-Type", "application/json");
   if userdb.UserExists(userData){
-    json.NewEncoder(w).Encode(map[string]string{"msg": userNameAlreadyTaken});
+    http.Error(w, userNameAlreadyTaken, http.StatusIMUsed);
     return;
   }
   userId := userdb.AddUser(userData);

@@ -5,27 +5,51 @@ import (
 	"fmt"
 	"net/http"
 	roomdb "virtual-office/db/room"
-	"virtual-office/models"
 )
 
 func CreateRoomHandler(w http.ResponseWriter, r *http.Request){
-  roomData, err := getRoomDataFromBody(r);
-  if err != nil{
+  var roomData struct{
+    Id string `json:"ownerId"`;
+    PosX string `json:"x"`;
+    PosY string `json:"y"`;
+    Direction string `json:"direction"`
+  };
+  decoder := json.NewDecoder(r.Body);
+
+  defer r.Body.Close();
+
+  if err := decoder.Decode(&roomData); err != nil{
     http.Error(w, "Invalid request body", http.StatusBadRequest);
     return;
   }
   w.Header().Set("Content-Type","application/json");
-  id := roomdb.AddRoom(roomData);
+  fmt.Println(roomData)
+  id := roomdb.AddRoom(roomData.Id, roomData.PosX, roomData.PosY, roomData.Direction);
   json.NewEncoder(w).Encode(map[string]string{"id":id});
   };
 
 func JoinRoomHandler(w http.ResponseWriter, r *http.Request){
-  roomData, err := getRoomDataFromBody(r);
-  if err != nil{
-    http.Error(w, "Invaid Request Body", http.StatusBadRequest);
+  var roomData struct {
+    RoomId string `json:"roomId"`;
+    MemberId string `json:"memberId"`;
+    PosX string `json:"x"`;
+    PosY string `json:"y"`;
+    Direction string `json:"direction"`
+  }
+  decoder := json.NewDecoder(r.Body);
+
+  defer r.Body.Close();
+
+  if err := decoder.Decode(&roomData); err != nil{
+    http.Error(w, "Invalid request body", http.StatusBadRequest);
     return;
   }
   w.Header().Set("Content-Type","application/json");
+
+  err := roomdb.AddMemberToRoom(roomData.RoomId, roomData.MemberId, roomData.PosX, roomData.PosY, roomData.Direction);
+  if err != nil{
+    http.Error(w, err.Error(), http.StatusNotFound);
+  }
   roomDetails, err := roomdb.GetRoom(roomData.RoomId);
   fmt.Println(roomDetails, err);
   if err != nil{
@@ -34,16 +58,3 @@ func JoinRoomHandler(w http.ResponseWriter, r *http.Request){
   json.NewEncoder(w).Encode(roomDetails);
 }
 
-
-
-func getRoomDataFromBody(r *http.Request)(models.Room, error){
-  var roomData models.Room;
-  decoder := json.NewDecoder(r.Body);
-
-  defer r.Body.Close();
-
-  if err := decoder.Decode(&roomData); err != nil{
-    return models.Room{}, err;
-  }
-  return roomData, nil
-}

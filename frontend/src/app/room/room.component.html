@@ -1,11 +1,11 @@
 <div class="h-screen">
   <div *ngIf='roomId != "" else noRoomTemplate'>
     <div>Room : {{roomId}}</div>
-    <div class="flex" *ngFor="let row of canvas">
+    <div class="flex" *ngFor="let row of canvas; let r = index">
       <span
         class="border p-6"
-        [ngStyle]="{ 'background-color': col.color }"
-        *ngFor="let col of row"
+        [ngClass]="{'bg-red-100': r == x && c == y}"
+        *ngFor="let col of row; let c = index"
       >
       </span>
     </div>
@@ -13,5 +13,5 @@
 </div>
 
 <ng-template #noRoomTemplate>
-  Sorry c ouldn't find the room
+  Sorry couldn't find the room
 </ng-template>

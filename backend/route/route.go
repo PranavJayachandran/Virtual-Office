@@ -24,11 +24,16 @@ func Init() (*http.ServeMux){
     }
   })
   
-  mux.HandleFunc("/room", func(w http.ResponseWriter, r *http.Request){
-    if r.Method == http.MethodGet{
-      room.JoinRoomHandler(w, r);
-    } else if r.Method == http.MethodPost{
+  mux.HandleFunc("/create-room", func(w http.ResponseWriter, r *http.Request){
+    if r.Method == http.MethodPost{
       room.CreateRoomHandler(w, r);
+    } else {
+      http.Error(w, "Method not allowed", http.StatusMethodNotAllowed);
+    }
+  })
+  mux.HandleFunc("/join-room", func(w http.ResponseWriter, r *http.Request){
+    if r.Method == http.MethodPost{
+      room.JoinRoomHandler(w, r);
     } else {
       http.Error(w, "Method not allowed", http.StatusMethodNotAllowed);
     }

@@ -54,10 +54,11 @@ func UserPasswordMatch(userData models.User)(bool, string){
   var result struct {
 		ID string `bson:"_id"`
 	}
-  err := col.FindOne(context.TODO(), filter).Decode(result);
+  err := col.FindOne(context.TODO(), filter).Decode(&result);
   if err == mongo.ErrNoDocuments{
     return false, "";
   }
+  fmt.Println(result);
   return true, result.ID;
 }
 

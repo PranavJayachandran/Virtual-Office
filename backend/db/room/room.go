@@ -12,9 +12,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func AddRoom(room models.Room)(string){
+func AddRoom(ownerId string, posX string, posY string, direction string)(string){
   col := db.DbClient.Database("virtual-office").Collection("room");
-  result, err := col.InsertOne(context.TODO(), room);
+  newRoom := models.Room{
+    OwnerId: ownerId,
+    MemeberIds: []models.RoomUser{{UserId: ownerId,X: posX, Y:posY, Direction: direction}},
+  }
+  result, err := col.InsertOne(context.TODO(), newRoom);
   if err != nil{
     panic(err);
   }
@@ -46,4 +50,34 @@ func GetRoom(id string)(models.Room, error){
   result.RoomId = id
   return result, nil
 }
+func AddMemberToRoom(roomId string, memberId string, posX string, posY string, direction string)(error){
+  col := db.DbClient.Database("virtual-office").Collection("room");
+  newMember :=  models.RoomUser{
+    UserId : memberId,
+    X: posX,
+    Y: posY,
+    Direction: direction,
+  }
+  objId, err := primitive.ObjectIDFromHex(roomId);
+  if err != nil{
+    return err;
+  }
+  filter := bson.M{"_id":objId};
+  update := bson.M{
+    "$addToSet": bson.M{
+      "memberIds": newMember,
+    },
+  }
 
+  result, err := col.UpdateOne(context.TODO(),filter, update);
+  if err != nil{
+    return err;
+  }
+  if result.MatchedCount == 0{
+    return errors.New("Room not found")
+  } else if result.MatchedCount == 1{
+    return nil
+  } else{
+    return errors.New("No change");
+  }
+}

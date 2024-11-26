@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { generateUniqueId } from './enter-room.helper';
 import { Router } from '@angular/router';
+import { EnterRoomService } from './enter-room.service';
+import { GlobalDataService, GlobalMapKeys } from '../../core/global.data.service';
 
 @Component({
   selector: 'app-enter-room',
@@ -9,23 +10,26 @@ import { Router } from '@angular/router';
   imports: [FormsModule],
   templateUrl: './enter-room.component.html',
   styleUrl: './enter-room.component.scss',
+  providers: [EnterRoomService]
 })
 export class EnterRoomComponent {
   public roomId: string = '';
+  public errorMessage : string = "";
 
 
-  constructor(private router: Router){}
+  constructor(private router: Router, private enterRoomService: EnterRoomService, private globalService: GlobalDataService){}
 
   public joinRoom() {
     // Do some validation for this
-    console.log(this.roomId);
-    this.roomId = '';
-    this.enterRoom(this.roomId);
+    this.enterRoomService.joinRoom(this.roomId).subscribe((data)=>{
+      this.globalService.addData(GlobalMapKeys.Room,data);
+      this.enterRoom(data.id);
+    })
   }
   public createRoom() {
-    const newRoomId = generateUniqueId();
-    console.log(newRoomId);
-    this.enterRoom(newRoomId);
+    this.enterRoomService.createRoom("0","0").subscribe((data)=>{
+      this.enterRoom(data.id);
+    });
   }
   private enterRoom(roomId: string) {
     this.router.navigate(['/room'],{

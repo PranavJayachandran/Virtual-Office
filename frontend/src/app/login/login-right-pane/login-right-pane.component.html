@@ -18,6 +18,9 @@
       formControlName="password"
       placeholder="Password"
     />
+    <div class="text-red-600 transition-all duration-200 ease-in-out" *ngIf="errorMessage.length > 0">
+      {{errorMessage}}
+    </div> 
     <div class="flex justify-between">
       <div class="flex gap-1">
         <input id="remember-me" type="checkbox" formControlName="rememberMe" />
