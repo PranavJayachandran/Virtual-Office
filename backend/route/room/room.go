@@ -10,8 +10,8 @@ import (
 func CreateRoomHandler(w http.ResponseWriter, r *http.Request){
   var roomData struct{
     Id string `json:"ownerId"`;
-    PosX string `json:"x"`;
-    PosY string `json:"y"`;
+    PosX int `json:"x"`;
+    PosY int `json:"y"`;
     Direction string `json:"direction"`
   };
   decoder := json.NewDecoder(r.Body);
@@ -32,8 +32,8 @@ func JoinRoomHandler(w http.ResponseWriter, r *http.Request){
   var roomData struct {
     RoomId string `json:"roomId"`;
     MemberId string `json:"memberId"`;
-    PosX string `json:"x"`;
-    PosY string `json:"y"`;
+    PosX int `json:"x"`;
+    PosY int `json:"y"`;
     Direction string `json:"direction"`
   }
   decoder := json.NewDecoder(r.Body);

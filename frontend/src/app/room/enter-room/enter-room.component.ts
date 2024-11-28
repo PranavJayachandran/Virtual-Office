@@ -2,7 +2,11 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EnterRoomService } from './enter-room.service';
-import { GlobalDataService, GlobalMapKeys } from '../../core/global.data.service';
+import {
+  GlobalDataService,
+  GlobalMapKeys,
+} from '../../core/global.data.service';
+import { Room } from '../../shared/common.interface';
 
 @Component({
   selector: 'app-enter-room',
@@ -10,32 +14,40 @@ import { GlobalDataService, GlobalMapKeys } from '../../core/global.data.service
   imports: [FormsModule],
   templateUrl: './enter-room.component.html',
   styleUrl: './enter-room.component.scss',
-  providers: [EnterRoomService]
+  providers: [EnterRoomService],
 })
 export class EnterRoomComponent {
   public roomId: string = '';
-  public errorMessage : string = "";
+  public errorMessage: string = '';
 
-
-  constructor(private router: Router, private enterRoomService: EnterRoomService, private globalService: GlobalDataService){}
+  constructor(
+    private router: Router,
+    private enterRoomService: EnterRoomService,
+    private globalService: GlobalDataService
+  ) {}
 
   public joinRoom() {
     // Do some validation for this
-    this.enterRoomService.joinRoom(this.roomId).subscribe((data)=>{
-      this.globalService.addData(GlobalMapKeys.Room,data);
+    this.enterRoomService.joinRoom(this.roomId).subscribe((data) => {
+      this.globalService.addData(GlobalMapKeys.Room, data);
       this.enterRoom(data.id);
-    })
+    });
   }
   public createRoom() {
-    this.enterRoomService.createRoom("0","0").subscribe((data)=>{
+    this.enterRoomService.createRoom(0, 0).subscribe((data) => {
+      this.globalService.addData(GlobalMapKeys.Room, {
+        id: data.id,
+        memberIds: [],
+        ownerId: this.globalService.getData(GlobalMapKeys.UserId),
+      } as Room);
       this.enterRoom(data.id);
     });
   }
   private enterRoom(roomId: string) {
-    this.router.navigate(['/room'],{
+    this.router.navigate(['/room'], {
       queryParams: {
-        roomId: roomId
-      }
-    })
+        roomId: roomId,
+      },
+    });
   }
 }

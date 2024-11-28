@@ -1,12 +1,16 @@
 package route
 
 import (
+	"fmt"
 	"net/http"
 	"virtual-office/route/room"
 	"virtual-office/route/user"
 )
 
 func Init() (*http.ServeMux){
+    manager := &ClientManager{
+      rooms : make(map[string]*Room),
+    }
   mux := http.NewServeMux()
 	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
@@ -37,6 +41,10 @@ func Init() (*http.ServeMux){
     } else {
       http.Error(w, "Method not allowed", http.StatusMethodNotAllowed);
     }
+  })
+  mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request){
+    fmt.Println("Here")
+    handleSocketConnection(manager,w,r);
   })
   return mux;
 }

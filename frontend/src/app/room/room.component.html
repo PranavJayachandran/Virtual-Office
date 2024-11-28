@@ -5,6 +5,7 @@
       <span
         class="border p-6"
         [ngClass]="{'bg-red-100': r == x && c == y}"
+        [ngStyle]="{'backgroundColor':col.color}"
         *ngFor="let col of row; let c = index"
       >
       </span>

@@ -9,8 +9,8 @@ type Room struct {
 
 type RoomUser struct{
   UserId string `bson:"userId" json:"userId"`;
-  X string `bson:"x" json:"x"`;
-  Y string `bson:"y" json:"y"`;
+  X int `bson:"x" json:"x"`;
+  Y int `bson:"y" json:"y"`;
   Direction string `bson:"direction" json:"direction"`;
 }
 // direction would follow the clockwise numbering starting with 0 to top
