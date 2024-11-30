@@ -1,28 +1,43 @@
-import { Injectable } from "@angular/core";
-import { Room } from "../shared/common.interface";
+import { Injectable } from '@angular/core';
+import { Room } from '../shared/common.interface';
+import { UserService } from './user.service';
 
 export enum GlobalMapKeys {
-    UserId,
-    Room
+  UserId,
+  Room,
 }
 
-interface GlobalMapTypes{
-    [GlobalMapKeys.UserId]: string,
-    [GlobalMapKeys.Room]: Room
+interface GlobalMapTypes {
+  [GlobalMapKeys.UserId]: string;
+  [GlobalMapKeys.Room]: Room;
 }
 
 @Injectable({
-    providedIn:"root"
+  providedIn: 'root',
 })
-export class GlobalDataService{
-    private map: {
-        [K in keyof GlobalMapTypes]? : GlobalMapTypes[K];
-    } = {};
+export class GlobalDataService {
+  private map: {
+    [K in keyof GlobalMapTypes]?: GlobalMapTypes[K];
+  } = {};
 
-    public addData<T extends keyof GlobalMapTypes>(type: T, data: GlobalMapTypes[T]){
-        this.map[type] = data;
+  constructor(private userService: UserService) {}
+
+  public addData<T extends keyof GlobalMapTypes>(
+    type: T,
+    data: GlobalMapTypes[T]
+  ) {
+    window.localStorage.setItem(type.toString(), JSON.stringify(data));
+    this.map[type] = data;
+  }
+  public getData<T extends keyof GlobalMapTypes>(
+    type: T
+  ): GlobalMapTypes[T] | undefined {
+    if (!this.map[type]) {
+      const item = window.localStorage.getItem(type.toString());
+      if (item != null) {
+        this.map[type] = JSON.parse(item);
+      }
     }
-    public getData<T extends keyof GlobalMapTypes>(type: T): GlobalMapTypes[T] | undefined{
-        return this.map[type];
-    }
+    return this.map[type];
+  }
 }

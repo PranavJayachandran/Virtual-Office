@@ -50,7 +50,7 @@ func GetRoom(id string)(models.Room, error){
   result.RoomId = id
   return result, nil
 }
-func AddMemberToRoom(roomId string, memberId string, posX int, posY int, direction string)(error){
+func AddMemberToRoom(roomId string, memberId string, posX int , posY int, direction string)(error){
   col := db.DbClient.Database("virtual-office").Collection("room");
   newMember :=  models.RoomUser{
     UserId : memberId,
@@ -58,11 +58,21 @@ func AddMemberToRoom(roomId string, memberId string, posX int, posY int, directi
     Y: posY,
     Direction: direction,
   }
+  room, err := GetRoom(roomId);
+  for _, member := range room.MemeberIds{
+    fmt.Printf("%s %s",memberId, member)
+    if(member.UserId == memberId){
+      return nil
+    }
+  }
   objId, err := primitive.ObjectIDFromHex(roomId);
   if err != nil{
     return err;
   }
-  filter := bson.M{"_id":objId};
+  filter := bson.M{
+    "_id":objId,
+    "memberIds.userId": bson.M{"$ne": memberId},
+  };
   update := bson.M{
     "$addToSet": bson.M{
       "memberIds": newMember,
@@ -90,17 +100,15 @@ if err != nil {
   return err
 }
 
-// Create a filter for the memberId to find the specific member in the 'memberIds' array
 filter := bson.M{
   "_id": objId,
-  "memberIds.userId": memberId, // Find the member with the specified UserId
+  "memberIds.userId": memberId,
 }
 
-// Create the update document
 update := bson.M{
   "$set": bson.M{
-    "memberIds.$.x": posx, // Update X position
-    "memberIds.$.y": posy, // Update Y position
+    "memberIds.$.x": posx, 
+    "memberIds.$.y": posy, 
   },
 }
 

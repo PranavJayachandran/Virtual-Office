@@ -50,11 +50,18 @@ func JoinRoomHandler(w http.ResponseWriter, r *http.Request){
   if err != nil{
     http.Error(w, err.Error(), http.StatusNotFound);
   }
-  roomDetails, err := roomdb.GetRoom(roomData.RoomId);
-  fmt.Println(roomDetails, err);
-  if err != nil{
-    http.Error(w, err.Error(), http.StatusNotFound);
+  json.NewEncoder(w).Encode(map[string]string{"id":roomData.RoomId});
+}
+
+func GetRoomHandler(w http.ResponseWriter, r *http.Request){
+
+  var roomId = r.URL.Query().Get("roomId")
+
+  w.Header().Set("Content-Type", "application/json")
+  roomDetails, err := roomdb.GetRoom(roomId)
+  if err!= nil{
+    http.Error(w, err.Error(), http.StatusNotFound)
   }
-  json.NewEncoder(w).Encode(roomDetails);
+  json.NewEncoder(w).Encode(roomDetails)
 }
 

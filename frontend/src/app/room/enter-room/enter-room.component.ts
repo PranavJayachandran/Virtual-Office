@@ -29,17 +29,11 @@ export class EnterRoomComponent {
   public joinRoom() {
     // Do some validation for this
     this.enterRoomService.joinRoom(this.roomId).subscribe((data) => {
-      this.globalService.addData(GlobalMapKeys.Room, data);
       this.enterRoom(data.id);
     });
   }
   public createRoom() {
     this.enterRoomService.createRoom(0, 0).subscribe((data) => {
-      this.globalService.addData(GlobalMapKeys.Room, {
-        id: data.id,
-        memberIds: [],
-        ownerId: this.globalService.getData(GlobalMapKeys.UserId),
-      } as Room);
       this.enterRoom(data.id);
     });
   }

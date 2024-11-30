@@ -42,6 +42,13 @@ func Init() (*http.ServeMux){
       http.Error(w, "Method not allowed", http.StatusMethodNotAllowed);
     }
   })
+  mux.HandleFunc("/room", func(w http.ResponseWriter,r *http.Request){
+    if r.Method == http.MethodGet{
+      room.GetRoomHandler(w, r);
+    } else{
+      http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+    }
+  })
   mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request){
     fmt.Println("Here")
     handleSocketConnection(manager,w,r);

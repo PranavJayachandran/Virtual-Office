@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { successFullLogin, userNameAlreadyTaken } from '../../shared/common';
 import { CommonModule } from '@angular/common';
 import { GlobalDataService, GlobalMapKeys } from '../../core/global.data.service';
+import { UserService } from '../../core/user.service';
 
 @Component({
   selector: 'app-login-right-pane',
@@ -26,7 +27,8 @@ export class LoginRightPaneComponent {
   constructor(
     private router: Router,
     private loginService: LoginRightPaneService,
-    private globalService: GlobalDataService
+    private globalService: GlobalDataService,
+    private userService: UserService
   ) {}
   public onSubmit() {
     //Check the validity of the credentials
@@ -37,6 +39,7 @@ export class LoginRightPaneComponent {
     this.loginService.login(user).subscribe(
       (data: {id: string}) => {
           this.globalService.addData(GlobalMapKeys.UserId, data.id);
+          this.userService.saveUser(data.id);
           this.router.navigate(['/enter-room']);
       },
       (err) => {
