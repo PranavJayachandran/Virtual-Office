@@ -4,12 +4,14 @@ import { userMovementAnimation } from '../helpers/animation';
 import { boxHeight, boxWidth, IS_MOVING } from '../constants/constants';
 import { movePlayer, placeObject } from '../helpers/movement';
 import { Direction } from '../enums/direction';
+import { assets } from '../constants/assets';
 
 export class Room extends Scene {
   camera!: Phaser.Cameras.Scene2D.Camera;
   gameText!: Phaser.GameObjects.Text;
   player!: Phaser.Physics.Arcade.Sprite;
-  platforms!: Phaser.Physics.Arcade.StaticGroup;
+  colliding!: Phaser.Physics.Arcade.StaticGroup;
+  nonColliding!: Phaser.Physics.Arcade.Group;
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
 
   constructor() {
@@ -22,35 +24,55 @@ export class Room extends Scene {
       frameWidth: 32,
       frameHeight: 48,
     });
-    this.load.image('chair', 'assets/chair.png');
-    this.load.image('table', 'assets/table.png');
+    this.addAssets();
   }
   public create() {
-    this.platforms = this.physics.add.staticGroup();
-    this.physics.world.enable(this.platforms);
-    // const chair = placeObject(this.platforms, 10, 5, 1, 1, 'chair');
+    this.colliding = this.physics.add.staticGroup();
+    this.nonColliding = this.physics.add.group();
+
+    this.physics.world.enable(this.colliding);
+
+    //Placing all the chairs
+    placeObject(this.nonColliding, 10, 8, 1, 1, 'chair-up');
+    placeObject(this.nonColliding, 11, 8, 1, 1, 'chair-up');
+    placeObject(this.nonColliding, 12, 8, 1, 1, 'chair-up');
+    placeObject(this.nonColliding, 13, 8, 1, 1, 'chair-up');
+
+    placeObject(this.nonColliding, 9, 9, 1, 1, 'chair-left');
+    placeObject(this.nonColliding, 9, 10, 1, 1, 'chair-left');
+    placeObject(this.nonColliding, 9, 11, 1, 1, 'chair-left');
+    placeObject(this.nonColliding, 9, 12, 1, 1, 'chair-left');
+
+    placeObject(this.nonColliding, 10, 13, 1, 1, 'chair-down');
+    placeObject(this.nonColliding, 11, 13, 1, 1, 'chair-down');
+    placeObject(this.nonColliding, 12, 13, 1, 1, 'chair-down');
+    placeObject(this.nonColliding, 13, 13, 1, 1, 'chair-down');
+
+    placeObject(this.nonColliding, 14, 9, 1, 1, 'chair-right');
+    placeObject(this.nonColliding, 14, 10, 1, 1, 'chair-right');
+    placeObject(this.nonColliding, 14, 11, 1, 1, 'chair-right');
+    placeObject(this.nonColliding, 14, 12, 1, 1, 'chair-right');
 
     this.camera = this.cameras.main;
-    const table = placeObject(this.platforms, 10, 9, 4, 4, 'table');
+    const table = placeObject(this.colliding, 10, 9, 4, 4, 'table');
 
     this.player = this.physics.add.sprite(
-      10 * boxHeight + boxHeight / 2,
-      5 * boxWidth + boxWidth / 2,
+      10 * boxHeight,
+      5 * boxWidth,
       'dude'
     );
+    this.player.setOrigin(0,0);
+    this.player.setOffset(0,0);
+    this.player.setDisplaySize(boxHeight, boxWidth);
     this.physics.world.enable(this.player);
     this.player.setCollideWorldBounds(true);
-    this.physics.add.collider(this.player, table, () => {
+    this.physics.add.collider(this.player, this.colliding, () => {
       console.log('Colide');
     });
-    this.physics.add.overlap(this.player, this.platforms, () => {
-      console.log('Player is overlapping with table!');
-    });
-
     this.player.setData(IS_MOVING, false);
     userMovementAnimation(this, 'dude');
 
-    this.grid();
+    // this.grid();
 
     EventBus.emit('current-scene-ready', this);
   }
@@ -64,7 +86,6 @@ export class Room extends Scene {
         movePlayer(this, this.player, Direction.Right);
       } else {
         this.player.setVelocityX(0);
-        this.player.anims.play('turn');
       }
 
       if (this.cursors.up.isDown) {
@@ -76,6 +97,13 @@ export class Room extends Scene {
       }
     }
   }
+
+  private addAssets() {
+    assets.forEach((element) => {
+      this.load.image(element.name, element.assets);
+    });
+  }
+
   private grid() {
     const cols = Math.ceil(this.scale.width / boxWidth); // Number of columns
     const rows = Math.ceil(this.scale.height / boxHeight); // Number of rows
@@ -98,3 +126,9 @@ export class Room extends Scene {
     }
   }
 }
+
+
+
+//Todo:
+// - Create a primitive for a group call when in a area
+// - Make multiple user coming in the scene and how to manage it.

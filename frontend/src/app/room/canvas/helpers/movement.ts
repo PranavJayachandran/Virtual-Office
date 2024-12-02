@@ -13,8 +13,8 @@ export const movePlayer = (
   direction: Direction
 ) => {
   if (player.getData(IS_MOVING)) return;
-
-  const velocity = boxHeight * (1000 / timePerStep); // Adjust speed as needed
+  player.anims.play(direction);
+  const velocity = boxHeight * (1000/timePerStep); // Adjust speed as needed
 
   player.setData(IS_MOVING, true);
 
@@ -30,31 +30,35 @@ export const movePlayer = (
       : direction === Direction.Down
       ? velocity
       : 0;
-
   player.setVelocity(xOffset, yOffset);
 
   scene.time.addEvent({
-    delay: timePerStep, // Match duration to the intended distance
+    delay: timePerStep,
     callback: () => {
       player.setVelocity(0);
+
+      player.x = Math.round(player.x / boxWidth) * boxWidth;
+      player.y = Math.round(player.y / boxHeight) * boxHeight;
+
+      player.anims.play('static-' + direction);
       player.setData(IS_MOVING, false);
     },
   });
 };
 
 export const placeObject = (
-  platforms: Phaser.Physics.Arcade.StaticGroup,
+  platforms: Phaser.Physics.Arcade.StaticGroup | Phaser.Physics.Arcade.Group,
   x: number,
   y: number,
   numberOfRows: number,
   numberOfCols: number,
   assetName: string
 ): Phaser.Physics.Arcade.Sprite => {
-  const item = platforms.create(
-    x * boxHeight + boxHeight / 2,
-    y * boxWidth + boxWidth / 2,
-    assetName
-  );
-  item.setDisplaySize(boxHeight * numberOfRows, boxWidth * numberOfCols).refreshBody();
+  const item = platforms.create(x * boxHeight, y * boxWidth, assetName);
+  item.setOrigin(0, 0);
+  item.body.setOffset(0, 0);
+  item
+    .setDisplaySize(boxHeight * numberOfRows, boxWidth * numberOfCols)
+    .refreshBody();
   return item;
 };
