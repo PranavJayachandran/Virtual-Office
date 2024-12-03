@@ -31,38 +31,13 @@ export class Room extends Scene {
     this.nonColliding = this.physics.add.group();
 
     this.physics.world.enable(this.colliding);
-
-    //Placing all the chairs
-    placeObject(this.nonColliding, 10, 8, 1, 1, 'chair-up');
-    placeObject(this.nonColliding, 11, 8, 1, 1, 'chair-up');
-    placeObject(this.nonColliding, 12, 8, 1, 1, 'chair-up');
-    placeObject(this.nonColliding, 13, 8, 1, 1, 'chair-up');
-
-    placeObject(this.nonColliding, 9, 9, 1, 1, 'chair-left');
-    placeObject(this.nonColliding, 9, 10, 1, 1, 'chair-left');
-    placeObject(this.nonColliding, 9, 11, 1, 1, 'chair-left');
-    placeObject(this.nonColliding, 9, 12, 1, 1, 'chair-left');
-
-    placeObject(this.nonColliding, 10, 13, 1, 1, 'chair-down');
-    placeObject(this.nonColliding, 11, 13, 1, 1, 'chair-down');
-    placeObject(this.nonColliding, 12, 13, 1, 1, 'chair-down');
-    placeObject(this.nonColliding, 13, 13, 1, 1, 'chair-down');
-
-    placeObject(this.nonColliding, 14, 9, 1, 1, 'chair-right');
-    placeObject(this.nonColliding, 14, 10, 1, 1, 'chair-right');
-    placeObject(this.nonColliding, 14, 11, 1, 1, 'chair-right');
-    placeObject(this.nonColliding, 14, 12, 1, 1, 'chair-right');
+    this.createGroupArea();
 
     this.camera = this.cameras.main;
-    const table = placeObject(this.colliding, 10, 9, 4, 4, 'table');
-
-    this.player = this.physics.add.sprite(
-      10 * boxHeight,
-      5 * boxWidth,
-      'dude'
-    );
-    this.player.setOrigin(0,0);
-    this.player.setOffset(0,0);
+    this.createPrivateArea();
+    this.player = this.physics.add.sprite(10 * boxHeight, 5 * boxWidth, 'dude');
+    this.player.setOrigin(0, 0);
+    this.player.setOffset(0, 0);
     this.player.setDisplaySize(boxHeight, boxWidth);
     this.physics.world.enable(this.player);
     this.player.setCollideWorldBounds(true);
@@ -125,9 +100,91 @@ export class Room extends Scene {
       graphics.lineBetween(0, y, this.scale.width, y);
     }
   }
+
+  private createPrivateArea(){
+    placeObject(this.colliding, 10, 0, 1, 1, 'table-single');
+    placeObject(this.colliding, 11, 0, 1, 1, 'table-single');
+    placeObject(this.colliding, 12, 0, 1, 1, 'table-single');
+    placeObject(this.colliding, 13, 0, 1, 1, 'table-single');
+    placeObject(this.colliding, 14, 0, 1, 1, 'table-single');
+    placeObject(this.colliding, 15, 0, 1, 1, 'table-single');
+  }
+
+  private createGroupArea(){
+    const addCollidableRectangle = (
+      x: number,
+      y: number,
+      width: number,
+      height: number
+    ) => {
+      let rectangle = this.add.rectangle(x, y, width, height, 0x0000);
+
+      // Set the origin of the rectangle
+      rectangle.setOrigin(0, 0);
+      this.colliding.add(rectangle);
+
+      return rectangle;
+    };
+
+    // Add the collidable rectangles
+    addCollidableRectangle.call(
+      this,
+      boxHeight * 7,
+      boxWidth * 6,
+      boxHeight,
+      9 * boxWidth
+    );
+    addCollidableRectangle.call(
+      this,
+      boxHeight * 8,
+      boxWidth * 6,
+      boxHeight * 2,
+      boxWidth
+    );
+    addCollidableRectangle.call(
+      this,
+      boxHeight * 12,
+      boxWidth * 6,
+      boxHeight * 4,
+      boxWidth
+    );
+    addCollidableRectangle.call(
+      this,
+      boxHeight * 16,
+      boxWidth * 6,
+      boxHeight,
+      boxWidth * 9
+    );
+    addCollidableRectangle.call(
+      this,
+      boxHeight * 7,
+      boxWidth * 15,
+      boxHeight * 10,
+      boxWidth
+    );
+    //Placing all the chairs
+    placeObject(this.nonColliding, 10, 8, 1, 1, 'chair-up');
+    placeObject(this.nonColliding, 11, 8, 1, 1, 'chair-up');
+    placeObject(this.nonColliding, 12, 8, 1, 1, 'chair-up');
+    placeObject(this.nonColliding, 13, 8, 1, 1, 'chair-up');
+
+    placeObject(this.nonColliding, 9, 9, 1, 1, 'chair-left');
+    placeObject(this.nonColliding, 9, 10, 1, 1, 'chair-left');
+    placeObject(this.nonColliding, 9, 11, 1, 1, 'chair-left');
+    placeObject(this.nonColliding, 9, 12, 1, 1, 'chair-left');
+
+    placeObject(this.nonColliding, 10, 13, 1, 1, 'chair-down');
+    placeObject(this.nonColliding, 11, 13, 1, 1, 'chair-down');
+    placeObject(this.nonColliding, 12, 13, 1, 1, 'chair-down');
+    placeObject(this.nonColliding, 13, 13, 1, 1, 'chair-down');
+
+    placeObject(this.nonColliding, 14, 9, 1, 1, 'chair-right');
+    placeObject(this.nonColliding, 14, 10, 1, 1, 'chair-right');
+    placeObject(this.nonColliding, 14, 11, 1, 1, 'chair-right');
+    placeObject(this.nonColliding, 14, 12, 1, 1, 'chair-right');
+    const table = placeObject(this.colliding, 10, 9, 4, 4, 'table-group');
+  }
 }
-
-
 
 //Todo:
 // - Create a primitive for a group call when in a area

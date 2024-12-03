@@ -16,7 +16,15 @@ export const assets = [
         assets: 'assets/chair-left.png'
     },
     {
-        name:'table',
-        assets: 'assets/table.png'
+        name:'table-group',
+        assets: 'assets/table-group.png'
     },
+    {
+        name: 'table-single',
+        assets: 'assets/table-single.png',
+    },
+    {
+        name: 'carpet',
+        assets: 'assets/carpet.png'
+    }
 ]
