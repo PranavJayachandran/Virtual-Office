@@ -13,8 +13,9 @@ export const movePlayer = (
   direction: Direction
 ) => {
   if (player.getData(IS_MOVING)) return;
+
   player.anims.play(direction);
-  const velocity = boxHeight * (1000/timePerStep); // Adjust speed as needed
+  const velocity = boxHeight * (1000 / timePerStep); // Adjust speed as needed
 
   player.setData(IS_MOVING, true);
 
@@ -30,6 +31,14 @@ export const movePlayer = (
       : direction === Direction.Down
       ? velocity
       : 0;
+
+  const newX = player.x + xOffset * (timePerStep / 1000);
+  const newY = player.y + yOffset * (timePerStep / 1000);
+  console.log(newX, newY);
+  if (newX < 0 || newX >= 1000 || newY < 0 || newY >= 1000) {
+    player.setData(IS_MOVING, false);
+    return;
+  }
   player.setVelocity(xOffset, yOffset);
 
   scene.time.addEvent({

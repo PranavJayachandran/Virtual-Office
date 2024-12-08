@@ -1,10 +1,12 @@
 import { Scene } from 'phaser';
-import { EventBus } from '../eventBus';
+import { PhaserEventBus, PhaserEvents } from '../phaserEventBus';
 import { userMovementAnimation } from '../helpers/animation';
 import { boxHeight, boxWidth, IS_MOVING } from '../constants/constants';
 import { movePlayer, placeObject } from '../helpers/movement';
 import { Direction } from '../enums/direction';
 import { assets } from '../constants/assets';
+import { createPlayer } from '../helpers/player';
+import { GlobalMapKeys } from '../../../core/global.data.service';
 
 export class Room extends Scene {
   camera!: Phaser.Cameras.Scene2D.Camera;
@@ -13,7 +15,9 @@ export class Room extends Scene {
   colliding!: Phaser.Physics.Arcade.StaticGroup;
   nonColliding!: Phaser.Physics.Arcade.Group;
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-
+  currentUser = '';
+  players!: Phaser.Physics.Arcade.Group;
+  playersList = [];
   constructor() {
     super('Room');
   }
@@ -25,34 +29,50 @@ export class Room extends Scene {
       frameHeight: 48,
     });
     this.addAssets();
+
+    PhaserEventBus.on(PhaserEvents.RoomData, (data: any) => {
+      const roomData = data.roomData;
+      this.currentUser = data.userId;
+      roomData.memberIds.forEach((element: any) => {
+        const text = this.add.text(0, 0, element.userId);
+        const player = createPlayer(
+          element.x,
+          element.y,
+          'dude',
+          this.physics,
+          text,
+          this.events
+        );
+        if (element.userId == this.currentUser) {
+          this.player = player;
+          this.player.setData(IS_MOVING, false);
+        } else {
+          player.body.moves = false;
+        }
+        this.physics.add.collider(player, this.players);
+        player.body.setCollideWorldBounds(true);
+        this.players.add(player);
+      });
+    });
   }
   public create() {
     this.colliding = this.physics.add.staticGroup();
+    this.players = this.physics.add.group();
     this.nonColliding = this.physics.add.group();
 
     this.physics.world.enable(this.colliding);
     this.createGroupArea();
 
+    const text = this.add.text(0, 0, 'AS');
+    this.player = createPlayer(10, 5, 'dude', this.physics, text, this.events);
     this.camera = this.cameras.main;
     this.createPrivateArea();
-    this.player = this.physics.add.sprite(10 * boxHeight, 5 * boxWidth, 'dude');
-    this.player.setOrigin(0, 0);
-    this.player.setOffset(0, 0);
-    this.player.setDisplaySize(boxHeight, boxWidth);
-    this.physics.world.enable(this.player);
-    this.player.setCollideWorldBounds(true);
-    this.physics.add.collider(this.player, this.colliding, () => {
-      console.log('Colide');
-    });
-    this.player.setData(IS_MOVING, false);
     userMovementAnimation(this, 'dude');
-
-    // this.grid();
-
-    EventBus.emit('current-scene-ready', this);
+    this.physics.add.collider(this.players, this.colliding);
+    PhaserEventBus.emit(PhaserEvents.RoomReady, this);
   }
   public override update() {
-    if (!this.player.getData(IS_MOVING)) {
+    if (this.player && !this.player.getData(IS_MOVING)) {
       this.cursors = this.input.keyboard?.createCursorKeys()!;
 
       if (this.cursors.left.isDown) {
@@ -79,29 +99,7 @@ export class Room extends Scene {
     });
   }
 
-  private grid() {
-    const cols = Math.ceil(this.scale.width / boxWidth); // Number of columns
-    const rows = Math.ceil(this.scale.height / boxHeight); // Number of rows
-
-    // Draw grid lines
-    const graphics = this.add.graphics({
-      lineStyle: { width: 1, color: 0x00ff00 },
-    });
-
-    // Draw vertical lines
-    for (let i = 0; i <= cols; i++) {
-      const x = i * boxWidth;
-      graphics.lineBetween(x, 0, x, this.scale.height);
-    }
-
-    // Draw horizontal lines
-    for (let j = 0; j <= rows; j++) {
-      const y = j * boxHeight;
-      graphics.lineBetween(0, y, this.scale.width, y);
-    }
-  }
-
-  private createPrivateArea(){
+  private createPrivateArea() {
     placeObject(this.colliding, 10, 0, 1, 1, 'table-single');
     placeObject(this.colliding, 11, 0, 1, 1, 'table-single');
     placeObject(this.colliding, 12, 0, 1, 1, 'table-single');
@@ -110,7 +108,7 @@ export class Room extends Scene {
     placeObject(this.colliding, 15, 0, 1, 1, 'table-single');
   }
 
-  private createGroupArea(){
+  private createGroupArea() {
     const addCollidableRectangle = (
       x: number,
       y: number,
@@ -119,14 +117,12 @@ export class Room extends Scene {
     ) => {
       let rectangle = this.add.rectangle(x, y, width, height, 0x0000);
 
-      // Set the origin of the rectangle
       rectangle.setOrigin(0, 0);
       this.colliding.add(rectangle);
 
       return rectangle;
     };
 
-    // Add the collidable rectangles
     addCollidableRectangle.call(
       this,
       boxHeight * 7,
@@ -187,5 +183,5 @@ export class Room extends Scene {
 }
 
 //Todo:
-// - Create a primitive for a group call when in a area
 // - Make multiple user coming in the scene and how to manage it.
+// - Create a primitive for a group call when in a area

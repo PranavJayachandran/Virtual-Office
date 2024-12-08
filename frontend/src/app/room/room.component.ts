@@ -1,16 +1,19 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Box } from './room.interface';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { RoomService } from './room.service';
 import { GlobalDataService, GlobalMapKeys } from '../core/global.data.service';
 import { Room } from '../shared/common.interface';
+import { PhaserGame } from './canvas/canvas.component';
+import { BridgeEvents, BridgeService } from './canvas/bridge';
+import { PhaserEventBus, PhaserEvents } from './canvas/phaserEventBus';
 const length = 30;
 const width = 30;
 @Component({
   selector: 'app-room',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PhaserGame],
   templateUrl: './room.component.html',
   styleUrl: './room.component.scss',
   providers: [RoomService],
@@ -25,13 +28,20 @@ export class RoomComponent implements OnInit {
   constructor(
     private activeRoute: ActivatedRoute,
     private roomService: RoomService,
-    private globalService: GlobalDataService
+    private globalService: GlobalDataService,
+    private bridge: BridgeService
   ) {}
   ngOnInit(): void {
     this.userId = this.globalService.getData(GlobalMapKeys.UserId) ?? '';
     this.setRoomId();
     this.roomService.connect(this.roomId);
-    this.initialiseCanvas();
+    this.bridge.on(BridgeEvents.SceneReady).subscribe(() => {
+      this.roomService.getRoomData(this.roomId).subscribe((roomData: Room) => {
+        console.log("USER",this.userId);
+        this.bridge.broadcast(BridgeEvents.RoomData, {roomData, userId: this.userId}, PhaserEvents.RoomData);
+      });
+    });
+    // this.initialiseCanvas();
     this.roomService.socket$.subscribe(
       (data: {
         posx: number;
@@ -76,51 +86,5 @@ export class RoomComponent implements OnInit {
         });
       this.canvas[this.x][this.y].color = 'red';
     });
-  }
-  @HostListener('document:keydown', ['$event'])
-  public onKeyDown(event: KeyboardEvent): void {
-    event.preventDefault();
-    const tx = this.x,
-      ty = this.y;
-
-    switch (event.key) {
-      case 'ArrowUp':
-        if (this.canMove(this.x - 1, this.y)) {
-          this.x--;
-          this.roomService.sendMessage(tx, ty, this.x, this.y);
-        }
-
-        break;
-      case 'ArrowDown':
-        if (this.canMove(this.x + 1, this.y)) {
-          this.x++;
-          this.roomService.sendMessage(tx, ty, this.x, this.y);
-        }
-        break;
-      case 'ArrowLeft':
-        if (this.canMove(this.x, this.y - 1)) {
-          this.y--;
-          this.roomService.sendMessage(tx, ty, this.x, this.y);
-        }
-        break;
-      case 'ArrowRight':
-        if (this.canMove(this.x, this.y + 1)) {
-          this.y++;
-          this.roomService.sendMessage(tx, ty, this.x, this.y);
-        }
-        break;
-    }
-  }
-  private canMove(x: number, y: number) {
-    if (
-      x < 0 ||
-      x >= length ||
-      y < 0 ||
-      y >= width ||
-      this.canvas[x][y].userId != ''
-    ) {
-      return false;
-    }
-    return true;
   }
 }

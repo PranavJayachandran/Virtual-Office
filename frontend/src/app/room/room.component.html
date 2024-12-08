@@ -1,18 +1,10 @@
 <div class="h-screen">
-  <div *ngIf='roomId != "" else noRoomTemplate'>
-    <div>Room : {{roomId}}</div>
-    <div class="flex" *ngFor="let row of canvas; let r = index">
-      <span
-        class="border p-6"
-        [ngClass]="{'bg-red-100': r == x && c == y}"
-        [ngStyle]="{'backgroundColor':col.color}"
-        *ngFor="let col of row; let c = index"
-      >
-      </span>
+  <div *ngIf="roomId != ''; else noRoomTemplate">
+    <div>Room : {{ roomId }}</div>
+    <div class="bg-red-100 text-center items-center justify-center flex">
+      <phaser-game></phaser-game>
     </div>
   </div>
 </div>
 
-<ng-template #noRoomTemplate>
-  Sorry couldn't find the room
-</ng-template>
+<ng-template #noRoomTemplate> Sorry couldn't find the room </ng-template>
