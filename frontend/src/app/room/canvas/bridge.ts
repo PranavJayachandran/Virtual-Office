@@ -2,14 +2,19 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { PhaserEventBus, PhaserEvents } from './phaserEventBus';
 import { Room } from '../../shared/common.interface';
+import { IOtherUserMovement, IUserMovement } from '../room.interface';
 
 export enum BridgeEvents {
   RoomData,
   SceneReady,
+  UserMovement,
+  OtherUserMovement,
 }
 interface BridgeEventTypes {
   [BridgeEvents.RoomData]: { roomData: Room; userId: string };
   [BridgeEvents.SceneReady]: void;
+  [BridgeEvents.UserMovement]: IUserMovement;
+  [BridgeEvents.OtherUserMovement]: IOtherUserMovement;
 }
 @Injectable({
   providedIn: 'root',
@@ -20,6 +25,10 @@ export class BridgeService {
   constructor() {
     PhaserEventBus.on(PhaserEvents.RoomReady, (scene: any) => {
       this.event[BridgeEvents.SceneReady]?.next();
+    });
+
+    PhaserEventBus.on(PhaserEvents.UserMovement, (data: IUserMovement) => {
+      this.event[BridgeEvents.UserMovement]?.next(data);
     });
   }
 

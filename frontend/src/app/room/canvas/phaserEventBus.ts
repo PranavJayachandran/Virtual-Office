@@ -7,5 +7,7 @@ export const PhaserEventBus = new Events.EventEmitter();
 
 export enum PhaserEvents{
     RoomReady = 'Room Ready',
-    RoomData = 'Room Data'
+    RoomData = 'Room Data',
+    UserMovement = 'UserMovement',
+    OtherUserMovement = 'OtherUserMovement'
 }

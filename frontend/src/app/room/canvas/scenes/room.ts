@@ -2,11 +2,17 @@ import { Scene } from 'phaser';
 import { PhaserEventBus, PhaserEvents } from '../phaserEventBus';
 import { userMovementAnimation } from '../helpers/animation';
 import { boxHeight, boxWidth, IS_MOVING } from '../constants/constants';
-import { movePlayer, placeObject } from '../helpers/movement';
+import {
+  directionResolver,
+  movePlayer,
+  placeObject,
+} from '../helpers/movement';
 import { Direction } from '../enums/direction';
 import { assets } from '../constants/assets';
 import { createPlayer } from '../helpers/player';
 import { GlobalMapKeys } from '../../../core/global.data.service';
+import { IOtherUserMovement } from '../../room.interface';
+import { IPlayerCharacter } from '../interfaces/player.interface';
 
 export class Room extends Scene {
   camera!: Phaser.Cameras.Scene2D.Camera;
@@ -17,7 +23,7 @@ export class Room extends Scene {
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   currentUser = '';
   players!: Phaser.Physics.Arcade.Group;
-  playersList = [];
+  playersList: IPlayerCharacter[] = [];
   constructor() {
     super('Room');
   }
@@ -52,6 +58,7 @@ export class Room extends Scene {
         this.physics.add.collider(player, this.players);
         player.body.setCollideWorldBounds(true);
         this.players.add(player);
+        this.playersList.push({ userId: element.userId, player });
       });
     });
   }
@@ -62,9 +69,6 @@ export class Room extends Scene {
 
     this.physics.world.enable(this.colliding);
     this.createGroupArea();
-
-    const text = this.add.text(0, 0, 'AS');
-    this.player = createPlayer(10, 5, 'dude', this.physics, text, this.events);
     this.camera = this.cameras.main;
     this.createPrivateArea();
     userMovementAnimation(this, 'dude');
@@ -72,21 +76,49 @@ export class Room extends Scene {
     PhaserEventBus.emit(PhaserEvents.RoomReady, this);
   }
   public override update() {
+    PhaserEventBus.on(
+      PhaserEvents.OtherUserMovement,
+      (data: IOtherUserMovement) => {
+        if (data.userId == this.currentUser) return;
+        const player = this.playersList.filter(
+          (player: IPlayerCharacter) => data.userId === player.userId
+        );
+        if (player.length) {
+          this.physics.moveTo(
+            player[0].player,
+            Math.round(player[0].player.x / boxWidth),
+            Math.round(player[0].player.y / boxHeight),
+            1000
+          );
+          // movePlayer(
+          //   this,
+          //   player[0].player,
+          //   directionResolver(
+          //     Math.round(player[0].player.x / boxWidth),
+          //     Math.round(player[0].player.y / boxHeight),
+          //     data.posx,
+          //     data.posy
+          //   ),
+          //   false
+          // );
+        }
+      }
+    );
     if (this.player && !this.player.getData(IS_MOVING)) {
       this.cursors = this.input.keyboard?.createCursorKeys()!;
 
       if (this.cursors.left.isDown) {
-        movePlayer(this, this.player, Direction.Left);
+        movePlayer(this, this.player, Direction.Left, true);
       } else if (this.cursors.right.isDown) {
-        movePlayer(this, this.player, Direction.Right);
+        movePlayer(this, this.player, Direction.Right, true);
       } else {
         this.player.setVelocityX(0);
       }
 
       if (this.cursors.up.isDown) {
-        movePlayer(this, this.player, Direction.Up);
+        movePlayer(this, this.player, Direction.Up, true);
       } else if (this.cursors.down.isDown) {
-        movePlayer(this, this.player, Direction.Down);
+        movePlayer(this, this.player, Direction.Down, true);
       } else {
         this.player.setVelocityY(0);
       }

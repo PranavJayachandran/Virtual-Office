@@ -4,16 +4,11 @@ import { GlobalDataService, GlobalMapKeys } from '../core/global.data.service';
 import { HttpClient } from '@angular/common/http';
 import { Room } from '../shared/common.interface';
 import { environment } from '../environment/environment';
+import { IOtherUserMovement, IUserMovement } from './room.interface';
 
 @Injectable()
 export class RoomService {
-  public socket$: Subject<{
-    posx: number;
-    posy: number;
-    userId: string;
-    oldx: number;
-    oldy: number;
-  }> = new Subject();
+  public socket$: Subject<IOtherUserMovement> = new Subject();
   private socket!: WebSocket;
 
   constructor(private globalService: GlobalDataService, private http: HttpClient){}
@@ -27,14 +22,12 @@ export class RoomService {
       };
     }
   }
-  public sendMessage(ox: number, oy: number, posx: number, posy: number) {
+  public sendMessage(userMovementData: IUserMovement) {
     this.socket.send(
       JSON.stringify({
-        userId: this.globalService.getData(GlobalMapKeys.UserId) || "123",
-        oldx: ox,
-        oldy: oy,
-        posx: posx,
-        posy: posy,
+        userId: this.globalService.getData(GlobalMapKeys.UserId) || "67436bac581b05bdb812968b",
+        posx: userMovementData.posx,
+        posy: userMovementData.posy,
       })
     );
   }
