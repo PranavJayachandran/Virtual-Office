@@ -18,8 +18,6 @@ var upgrader = websocket.Upgrader{
 type roomMessageData struct{
   PosX int `json:"posx"`
   PosY int `json:"posy"`
-  OldX   int    `json:"oldx"`
-  OldY   int    `json:"oldy"`      
   UserId string `json:"userId"`
 }
 
@@ -53,8 +51,6 @@ type Message struct {
     UserID string `json:"userId"`
     PosX   int    `json:"posx"`
     PosY   int    `json:"posy"`
-    OldX   int    `json:"oldx"`
-    OldY   int    `json:"oldy"`      
 }
 func handleSocketConnection(manager *ClientManager, w http.ResponseWriter, r *http.Request){
   roomId := r.URL.Query().Get("roomId")
@@ -108,14 +104,12 @@ func handleSocketConnection(manager *ClientManager, w http.ResponseWriter, r *ht
             continue
         }
 
-        // Log the received message
       msg := roomMessageData{
         UserId: roomData.UserID,
         PosX: roomData.PosX,
         PosY: roomData.PosY,
-        OldX: roomData.OldX,
-        OldY: roomData.OldY,
     }
+    fmt.Println(msg.PosX, msg.PosY);
     err = roomdb.UpdateMemberPosition(roomId, roomData.UserID, roomData.PosX, roomData.PosY)
     if err != nil{
       fmt.Println(err.Error());

@@ -53,13 +53,54 @@ export class Room extends Scene {
           this.player = player;
           this.player.setData(IS_MOVING, false);
         } else {
-          player.body.moves = false;
+          // player.body.moves = false;
         }
         this.physics.add.collider(player, this.players);
         player.body.setCollideWorldBounds(true);
         this.players.add(player);
         this.playersList.push({ userId: element.userId, player });
       });
+
+      PhaserEventBus.on(
+        PhaserEvents.OtherUserMovement,
+        (data: IOtherUserMovement) => {
+          if (data.userId == this.currentUser) return;
+          const player = this.playersList.filter(
+            (player: IPlayerCharacter) => data.userId === player.userId
+          );
+          if (player.length) {
+            this.physics.moveTo(
+              player[0].player,
+              Math.round(player[0].player.x / boxWidth),
+              Math.round(player[0].player.y / boxHeight),
+              1000
+            );
+          }
+        }
+      );
+
+      PhaserEventBus.on(
+        PhaserEvents.OtherUserMovement,
+        (data: IOtherUserMovement) => {
+          if (data.userId == this.currentUser) return;
+          const player = this.playersList.find(
+            (player: IPlayerCharacter) => data.userId === player.userId
+          );
+          if (player) {
+            movePlayer(
+              this,
+              player.player,
+              directionResolver(
+                Math.round(player.player.x / boxWidth),
+                Math.round(player.player.y / boxHeight),
+                data.posx,
+                data.posy
+              ),
+              false
+            );
+          }
+        }
+      );
     });
   }
   public create() {
@@ -76,34 +117,6 @@ export class Room extends Scene {
     PhaserEventBus.emit(PhaserEvents.RoomReady, this);
   }
   public override update() {
-    PhaserEventBus.on(
-      PhaserEvents.OtherUserMovement,
-      (data: IOtherUserMovement) => {
-        if (data.userId == this.currentUser) return;
-        const player = this.playersList.filter(
-          (player: IPlayerCharacter) => data.userId === player.userId
-        );
-        if (player.length) {
-          this.physics.moveTo(
-            player[0].player,
-            Math.round(player[0].player.x / boxWidth),
-            Math.round(player[0].player.y / boxHeight),
-            1000
-          );
-          // movePlayer(
-          //   this,
-          //   player[0].player,
-          //   directionResolver(
-          //     Math.round(player[0].player.x / boxWidth),
-          //     Math.round(player[0].player.y / boxHeight),
-          //     data.posx,
-          //     data.posy
-          //   ),
-          //   false
-          // );
-        }
-      }
-    );
     if (this.player && !this.player.getData(IS_MOVING)) {
       this.cursors = this.input.keyboard?.createCursorKeys()!;
 

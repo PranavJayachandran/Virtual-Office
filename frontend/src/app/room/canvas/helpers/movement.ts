@@ -8,57 +8,70 @@ import { Direction } from '../enums/direction';
 import { PhaserEventBus, PhaserEvents } from '../phaserEventBus';
 import { Room } from '../scenes/room';
 
-//currentPlayer is used because only for current player do we need to send the socket message
 export const movePlayer = (
   scene: Room,
   player: Phaser.Physics.Arcade.Sprite,
   direction: Direction,
   isCurrentPlayer: boolean
 ) => {
+  // Prevent multiple movements if already moving
   if (player.getData(IS_MOVING)) return;
 
-  player.anims.play(direction);
-  const velocity = boxHeight * (1000 / timePerStep); // Adjust speed as needed
-
+  const velocity = boxHeight * (1000 / timePerStep); // Speed per second
   player.setData(IS_MOVING, true);
 
-  const xOffset =
+  // Play the movement animation
+  player.anims.play(direction, true);
+
+  // Set velocity based on direction
+  const xVelocity =
     direction === Direction.Left
       ? -velocity
       : direction === Direction.Right
       ? velocity
       : 0;
-  const yOffset =
+
+  const yVelocity =
     direction === Direction.Up
       ? -velocity
       : direction === Direction.Down
       ? velocity
       : 0;
-  const newX = player.x + xOffset * (timePerStep / 1000);
-  const newY = player.y + yOffset * (timePerStep / 1000);
-  console.log(player.x, player.y,newX, newY, direction);
-  if (isCurrentPlayer)
-    PhaserEventBus.emit(PhaserEvents.UserMovement, {
-      posx: Math.round(newX / boxWidth),
-      posy: Math.round(newY / boxHeight),
-    });
-  if (newX < 0 || newX >= 1000 || newY < 0 || newY >= 1000) {
-    player.setData(IS_MOVING, false);
-    return;
-  }
-  player.setVelocity(xOffset, yOffset);
 
+  console.log(player.x, player.y, xVelocity, yVelocity);
+  // Apply velocity
+  player.setVelocity(xVelocity, yVelocity);
+
+  // Emit movement event if current player
+  if (isCurrentPlayer) {
+    PhaserEventBus.emit(PhaserEvents.UserMovement, {
+      posx: Math.round(
+        (player.x + (xVelocity * timePerStep) / boxWidth) / boxWidth
+      ),
+      posy: Math.round(
+        (player.y + (yVelocity * timePerStep) / boxHeight) / boxHeight
+      ),
+    });
+  }
+
+  // Add a timed event to stop movement
   scene.time.addEvent({
     delay: timePerStep,
     callback: () => {
+      // Stop velocity
       player.setVelocity(0);
-      console.log("HERE");
+
+      // Snap player to grid
       player.x = Math.round(player.x / boxWidth) * boxWidth;
       player.y = Math.round(player.y / boxHeight) * boxHeight;
-      console.log(player.x, player.y, xOffset, yOffset);
 
+      // Play static animation
       player.anims.play('static-' + direction);
+
+      // Mark player as not moving
       player.setData(IS_MOVING, false);
+
+      console.log('Player stopped:', player.x, player.y);
     },
   });
 };
@@ -86,8 +99,9 @@ export const directionResolver = (
   posx: number,
   posy: number
 ): Direction => {
+  console.log(oldx, oldy, posx, posy);
   if (oldx == posx) {
     return posy > oldy ? Direction.Down : Direction.Up;
   }
-  return posx > oldx  ? Direction.Right : Direction.Left;
+  return posx > oldx ? Direction.Right : Direction.Left;
 };
