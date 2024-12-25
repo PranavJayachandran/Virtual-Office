@@ -4,11 +4,30 @@ public class AppDbContext: DbContext{
   public AppDbContext(DbContextOptions<AppDbContext> options):base(options){
     
   }
+  public DbSet<UserDTO> Users {get;set;}
+  public DbSet<RoomUserDTO> RoomUser {get;set;}
+  public DbSet<RoomDTO> Rooms {get;set;}
 
-  public DbSet<User> Users {get;set;}
-  protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            // Fluent API configuration for the User entity
-            modelBuilder.Entity<User>().ToTable("users");
-        }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+      {
+          modelBuilder.Entity<UserDTO>()
+          .HasKey(user => new {user.UserId});
+
+          modelBuilder.Entity<RoomDTO>()
+          .HasKey(room => new {room.RoomId});
+
+          modelBuilder.Entity<RoomUserDTO>()
+            .HasKey(ru => new {ru.RoomId, ru.UserId});
+
+          modelBuilder.Entity<RoomUserDTO>()
+          .HasOne(ru => ru.Room)
+          .WithMany(r => r.RoomUsers)
+          .HasForeignKey(ru => ru.RoomId);
+
+          modelBuilder.Entity<RoomUserDTO>()
+            .HasOne(ru => ru.User)
+            .WithMany(r => r.RoomUsers)
+            .HasForeignKey(ru => ru.UserId);
+      }
 }

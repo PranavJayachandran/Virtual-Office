@@ -10,25 +10,27 @@ namespace VirtualOffice.Controllers
   {
     [HttpPost]
     [Route("/login")]
-    public async Task<User> GetUser([FromBody] User user){
+    public async Task<User> GetUser([FromBody] UserModel user){
       if(!ValidateUser(user)){
         throw new Exception("Username or password was empty");
       }
-      return await userService.GetUser(user.Username, user.Password);
+      var result = await userService.GetUser(ControllerModelDomainMapper.UserToUserModelMapper(user));
+      result.Password = "";
+      return result;  
     }
 
     [HttpPost]
     [Route("/sign-up")]
-    public async Task<int> CreateUser([FromBody] User user){
+    public async Task<int> CreateUser([FromBody] UserModel user){
       if(!ValidateUser(user)){
         throw new Exception("Username or password was empty");
       }
-      return await userService.CreateUser(user.Username, user.Password);
+      return await userService.CreateUser(ControllerModelDomainMapper.UserToUserModelMapper(user));
     }
     
 
 
-    private Boolean ValidateUser(User user){
+    private Boolean ValidateUser(UserModel user){
       return !String.IsNullOrEmpty(user.Username) && !String.IsNullOrEmpty(user.Password);
     }
   }
