@@ -6,6 +6,7 @@ import {
   directionResolver,
   movePlayer,
   placeObject,
+  moveCurrentPlayer
 } from '../helpers/movement';
 import { Direction } from '../enums/direction';
 import { assets } from '../constants/assets';
@@ -62,40 +63,40 @@ export class Room extends Scene {
         this.playersList.push({ userId: element.userId, player });
       });
 
-      PhaserEventBus.on(
-        PhaserEvents.OtherUserMovement,
-        (data: IOtherUserMovement) => {
-          if (data.userId == this.currentUser) return;
-          const player = this.playersList.filter(
-            (player: IPlayerCharacter) => data.userId === player.userId
-          );
-          if (player.length) {
-            this.physics.moveTo(
-              player[0].player,
-              Math.round(player[0].player.x / boxWidth),
-              Math.round(player[0].player.y / boxHeight),
-              1000
-            );
-          }
-        }
-      );
+     // PhaserEventBus.on(
+     //   PhaserEvents.OtherUserMovement,
+     //   (data: IOtherUserMovement) => {
+     //     if (data.userId == this.currentUser) return;
+     //     const player = this.playersList.filter(
+     //       (player: IPlayerCharacter) => data.userId === player.userId
+     //     );
+     //     if (player.length) {
+     //       this.physics.moveTo(
+     //         player[0].player,
+     //         Math.round(player[0].player.x / boxWidth),
+     //         Math.round(player[0].player.y / boxHeight),
+     //         1000
+     //       );
+     //     }
+     //   }
+     // );
 
       PhaserEventBus.on(
         PhaserEvents.OtherUserMovement,
         (data: IOtherUserMovement) => {
-          if (data.userId == this.currentUser) return;
           const player = this.playersList.find(
             (player: IPlayerCharacter) => data.userId === player.userId
           );
           if (player) {
+        console.log("REcioed",data,player.player.x, player.player.y);
             movePlayer(
               this,
               player.player,
               directionResolver(
                 Math.round(player.player.x / boxWidth),
                 Math.round(player.player.y / boxHeight),
-                data.posx,
-                data.posy
+                data.posX,
+                data.posY
               ),
               false
             );
@@ -122,17 +123,17 @@ export class Room extends Scene {
       this.cursors = this.input.keyboard?.createCursorKeys()!;
 
       if (this.cursors.left.isDown) {
-        movePlayer(this, this.player, Direction.Left, true);
+        moveCurrentPlayer(this.player, Direction.Left);
       } else if (this.cursors.right.isDown) {
-        movePlayer(this, this.player, Direction.Right, true);
+        moveCurrentPlayer(this.player, Direction.Right);
       } else {
         this.player.setVelocityX(0);
       }
 
       if (this.cursors.up.isDown) {
-        movePlayer(this, this.player, Direction.Up, true);
+        moveCurrentPlayer(this.player, Direction.Up);
       } else if (this.cursors.down.isDown) {
-        movePlayer(this, this.player, Direction.Down, true);
+        moveCurrentPlayer(this.player, Direction.Down);
       } else {
         this.player.setVelocityY(0);
       }

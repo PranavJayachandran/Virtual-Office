@@ -4,7 +4,7 @@ export interface User{
     password: string;
 }
 export interface Room{
-    id: string;
+    roomId: string;
     ownerId: string;
     userIds: RoomMember[]
 }

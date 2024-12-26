@@ -16,8 +16,8 @@ export class EnterRoomService {
     private http: HttpClient,
     private userService: UserService
   ) {}
-  public createRoom(x: number, y: number): Observable<{ id: string }> {
-    return this.http.put<{ id: string }>(
+  public createRoom(x: number, y: number): Observable<{ roomId: string }> {
+    return this.http.put<{ roomId: string }>(
       `${this.backendUrl}/room`,
       { userId: this.userService.getUserId() },
       {

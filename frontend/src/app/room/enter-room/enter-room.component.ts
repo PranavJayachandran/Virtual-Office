@@ -28,12 +28,12 @@ export class EnterRoomComponent {
   public joinRoom() {
     // Do some validation for this
     this.enterRoomService.joinRoom(this.roomId).subscribe((data) => {
-      this.enterRoom(data.id);
+      this.enterRoom(data.roomId);
     });
   }
   public createRoom() {
     this.enterRoomService.createRoom(0, 0).subscribe((data) => {
-      this.enterRoom(data.id);
+      this.enterRoom(data.roomId);
     });
   }
   private enterRoom(roomId: string) {

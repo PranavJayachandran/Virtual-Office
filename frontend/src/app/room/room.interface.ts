@@ -4,8 +4,8 @@ export interface Box {
   hasFurniture: boolean;
 }
 export interface IOtherUserMovement {
-  posx: number;
-  posy: number;
+  posX: number;
+  posY: number;
   userId: string;
 }
 export interface IUserMovement {

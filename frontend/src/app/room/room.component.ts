@@ -50,7 +50,7 @@ export class RoomComponent implements OnInit {
       this.roomService.sendMessage(data);
     })
     this.roomService.socket$.subscribe((data: IOtherUserMovement) => {
-      if(data.userId != this.userId)
+      console.log("Revie", data);
       this.bridge.broadcast(
         BridgeEvents.OtherUserMovement,
         data,

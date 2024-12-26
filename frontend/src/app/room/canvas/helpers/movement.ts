@@ -38,40 +38,23 @@ export const movePlayer = (
       ? velocity
       : 0;
 
-  console.log(player.x, player.y, xVelocity, yVelocity);
-  // Apply velocity
+
+   // Apply velocity
   player.setVelocity(xVelocity, yVelocity);
-
-  // Emit movement event if current player
-  if (isCurrentPlayer) {
-    PhaserEventBus.emit(PhaserEvents.UserMovement, {
-      posx: Math.round(
-        (player.x + (xVelocity * timePerStep) / boxWidth) / boxWidth
-      ),
-      posy: Math.round(
-        (player.y + (yVelocity * timePerStep) / boxHeight) / boxHeight
-      ),
-    });
-  }
-
+  console.log("Moving player", player.x, player.y, direction);
   // Add a timed event to stop movement
   scene.time.addEvent({
     delay: timePerStep,
     callback: () => {
       // Stop velocity
       player.setVelocity(0);
-
       // Snap player to grid
       player.x = Math.round(player.x / boxWidth) * boxWidth;
       player.y = Math.round(player.y / boxHeight) * boxHeight;
-
       // Play static animation
       player.anims.play('static-' + direction);
-
       // Mark player as not moving
       player.setData(IS_MOVING, false);
-
-      console.log('Player stopped:', player.x, player.y);
     },
   });
 };
@@ -105,3 +88,29 @@ export const directionResolver = (
   }
   return posx > oldx ? Direction.Right : Direction.Left;
 };
+
+export const moveCurrentPlayer = (player: Phaser.Physics.Arcade.Sprite, direction: Direction) => {
+  const velocity = boxHeight * (1000 / timePerStep); // Speed per second
+  const xVelocity =
+    direction === Direction.Left
+      ? -velocity
+      : direction === Direction.Right
+      ? velocity
+      : 0;
+
+  const yVelocity =
+    direction === Direction.Up
+      ? -velocity
+      : direction === Direction.Down
+      ? velocity
+      : 0;
+
+    PhaserEventBus.emit(PhaserEvents.UserMovement, {
+      posx: Math.round(
+        (player.x + (xVelocity * timePerStep/(1000))) / boxWidth
+      ),
+      posy: Math.round(
+        (player.y + (yVelocity * (timePerStep)/1000)) / boxHeight
+      ),
+    });
+}
