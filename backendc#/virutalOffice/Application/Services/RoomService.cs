@@ -13,5 +13,8 @@ namespace VirtualOffice.Application{
     public async Task<Room> GetRoom(int roomId){
       return await roomRespository.GetRoom(roomId);
     }
+    public async Task MoveUser(int roomId, int userId, int posX, int posY){
+       await roomUserRepository.MoveUserInRoom(roomId, userId, posX,posY);
+    }
   }
 }

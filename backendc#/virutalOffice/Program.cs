@@ -16,6 +16,8 @@ builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
 builder.Services.AddDbContext<AppDbContext>(
     options =>
       options.UseNpgsql(builder.Configuration.GetConnectionString("PsqlDb"))
+      .EnableSensitiveDataLogging()  // Log parameter values
+     .LogTo(Console.WriteLine, LogLevel.Information)  // Log SQL que
     );
 
 builder.Services.RegisterInfra();
@@ -28,6 +30,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.EnsureCreated();
 }
 app.UseCors("CorsPolicy");
 app.MapHub<RoomHub>("/roomHub"); 
