@@ -9,7 +9,7 @@ export class SignUpRightPaneService {
   public backendBaseUrl = environment.backendBaseUrl;
   constructor(private http: HttpClient) {}
   public signUp(user: User): Observable<any>{
-    return this.http.post(this.backendBaseUrl + '/sign-up', user, {
+    return this.http.post(this.backendBaseUrl + '/auth/sign-up', user, {
       headers: { 'Content-Type': 'application/json' },
     });
   }

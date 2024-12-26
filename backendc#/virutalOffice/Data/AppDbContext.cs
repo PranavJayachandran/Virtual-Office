@@ -18,7 +18,7 @@ public class AppDbContext: DbContext{
           .HasKey(room => new {room.RoomId});
 
           modelBuilder.Entity<RoomUserDTO>()
-            .HasKey(ru => new {ru.RoomId, ru.UserId});
+            .HasKey(ru => new {ru.RoomId, ru.UserId, ru.PosX, ru.PosY});
 
           modelBuilder.Entity<RoomUserDTO>()
           .HasOne(ru => ru.Room)

@@ -18,6 +18,12 @@ namespace VirtualOffice.Controllers{
     public Task<Room> JoinRoom([FromBody] RoomUserModel room){
       return roomService.JoinRoom(room.RoomId, room.UserId);
     }
+
+    [HttpGet]
+    [Route("")]
+    public Task<Room> GetRoom([FromQuery] int roomId){
+      return roomService.GetRoom(roomId);
+    }
   }
 
   public class UserIdModel{

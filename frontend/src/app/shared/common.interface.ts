@@ -6,7 +6,7 @@ export interface User{
 export interface Room{
     id: string;
     ownerId: string;
-    memberIds: RoomMember[]
+    userIds: RoomMember[]
 }
 export interface RoomMember{
     userId: string;

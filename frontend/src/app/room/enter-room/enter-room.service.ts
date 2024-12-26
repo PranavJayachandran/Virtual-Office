@@ -7,28 +7,30 @@ import {
   GlobalDataService,
   GlobalMapKeys,
 } from '../../core/global.data.service';
+import { UserService } from '../../core/user.service';
 
 @Injectable()
 export class EnterRoomService {
   public backendUrl = environment.backendBaseUrl;
   constructor(
     private http: HttpClient,
-    private globalService: GlobalDataService
+    private userService: UserService
   ) {}
   public createRoom(x: number, y: number): Observable<{ id: string }> {
-    return this.http.post<{ id: string }>(`${this.backendUrl}/create-room`, {ownerId: this.globalService.getData(GlobalMapKeys.UserId) || "1", x: x,y :y, direction: "UP"}, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return this.http.put<{ id: string }>(
+      `${this.backendUrl}/room`,
+      { userId: this.userService.getUserId() },
+      {
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   }
   public joinRoom(id: string): Observable<Room> {
     const roomData = {
-        roomId: id,
-        memberId : this.globalService.getData(GlobalMapKeys.UserId) || "2",
-        x: 0,
-        y: 0,
-        direction: "Up"
-    }
-    return this.http.post<Room>(`${this.backendUrl}/join-room`,roomData, {
+      roomId: id,
+      userId: this.userService.getUserId(),
+    };
+    return this.http.post<Room>(`${this.backendUrl}/room`, roomData, {
       headers: { 'Content-Type': 'application/json' },
     });
   }

@@ -14,22 +14,22 @@ export class RoomService {
   constructor(private globalService: GlobalDataService, private http: HttpClient){}
 
   public connect(roomId: string) {
-    const url = `ws://localhost:8000/ws?roomId=${roomId}`;
-    this.socket = new WebSocket(url);
-    if (this.socket) {
-      this.socket.onmessage = (msg: MessageEvent) => {
-        this.socket$.next(JSON.parse(msg.data));
-      };
-    }
+    // const url = `ws://localhost:8000/ws?roomId=${roomId}`;
+    // this.socket = new WebSocket(url);
+    // if (this.socket) {
+    //   this.socket.onmessage = (msg: MessageEvent) => {
+    //     this.socket$.next(JSON.parse(msg.data));
+    //   };
+    // }
   }
   public sendMessage(userMovementData: IUserMovement) {
-    this.socket.send(
-      JSON.stringify({
-        userId: this.globalService.getData(GlobalMapKeys.UserId) || "67436bac581b05bdb812968b",
-        posx: userMovementData.posx,
-        posy: userMovementData.posy,
-      })
-    );
+    // this.socket.send(
+    //   JSON.stringify({
+    //     userId: this.globalService.getData(GlobalMapKeys.UserId) || "67436bac581b05bdb812968b",
+    //     posx: userMovementData.posx,
+    //     posy: userMovementData.posy,
+    //   })
+    // );
   }
 
   public getRoomData(roomId: string){

@@ -34,6 +34,7 @@ export class GlobalDataService {
   ): GlobalMapTypes[T] | undefined {
     if (!this.map[type]) {
       const item = window.localStorage.getItem(type.toString());
+      console.log(item);
       if (item != null) {
         this.map[type] = JSON.parse(item);
       }

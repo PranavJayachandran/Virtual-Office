@@ -9,6 +9,12 @@ public class RoomUserDTO{
   [Column("userid")]
   public int UserId {get;set;}
 
+  [Column("posx")]
+  public int PosX {get;set;}
+
+  [Column("posy")]
+  public int PosY {get;set;}
+
   public RoomDTO Room {get;set;}
   public UserDTO User {get;set;}
 }

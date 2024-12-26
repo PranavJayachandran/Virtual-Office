@@ -9,7 +9,7 @@ export class LoginRightPaneService {
   constructor(private http: HttpClient) {}
   private backendBaseUrl = environment.backendBaseUrl;
   public login(user: User): Observable<any> {
-    return this.http.post(this.backendBaseUrl + '/login', user, {
+    return this.http.post(this.backendBaseUrl + '/auth/login', user, {
       headers: { 'Content-Type': 'application/json' },
     });
   }

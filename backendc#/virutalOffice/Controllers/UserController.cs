@@ -9,7 +9,7 @@ namespace VirtualOffice.Controllers
   public class UserController(IUserService userService): ControllerBase
   {
     [HttpPost]
-    [Route("/login")]
+    [Route("login")]
     public async Task<User> GetUser([FromBody] UserModel user){
       if(!ValidateUser(user)){
         throw new Exception("Username or password was empty");
@@ -20,7 +20,7 @@ namespace VirtualOffice.Controllers
     }
 
     [HttpPost]
-    [Route("/sign-up")]
+    [Route("sign-up")]
     public async Task<int> CreateUser([FromBody] UserModel user){
       if(!ValidateUser(user)){
         throw new Exception("Username or password was empty");

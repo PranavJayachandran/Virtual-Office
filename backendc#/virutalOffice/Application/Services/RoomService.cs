@@ -9,5 +9,9 @@ namespace VirtualOffice.Application{
       await roomUserRepository.AddUserToRoom(roomId, userId);
       return await roomRespository.GetRoom(roomId);
     }
+
+    public async Task<Room> GetRoom(int roomId){
+      return await roomRespository.GetRoom(roomId);
+    }
   }
 }

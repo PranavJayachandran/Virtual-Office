@@ -38,12 +38,13 @@ export class Room extends Scene {
 
     PhaserEventBus.on(PhaserEvents.RoomData, (data: any) => {
       const roomData = data.roomData;
+      console.log(roomData);
       this.currentUser = data.userId;
-      roomData.memberIds.forEach((element: any) => {
+      roomData.userIds.forEach((element: any) => {
         const text = this.add.text(0, 0, element.userId);
         const player = createPlayer(
-          element.x,
-          element.y,
+          element.posX,
+          element.posY,
           'dude',
           this.physics,
           text,

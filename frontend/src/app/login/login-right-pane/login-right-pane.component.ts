@@ -37,9 +37,9 @@ export class LoginRightPaneComponent {
       password: this.loginForm.value.password || '',
     };
     this.loginService.login(user).subscribe(
-      (data: {id: string}) => {
-          this.globalService.addData(GlobalMapKeys.UserId, data.id);
-          this.userService.saveUser(data.id);
+      (data: {userId: string}) => {
+          // this.globalService.addData(GlobalMapKeys.UserId, data.userId);
+          this.userService.saveUserId(data.userId);
           this.router.navigate(['/enter-room']);
       },
       (err) => {

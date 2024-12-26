@@ -28,7 +28,11 @@ namespace VirtualOffice.Data
       };
 
       foreach(var item in roomUserDto){
-        room.UserIds.Add(item.UserId);
+        room.UserIds.Add(new UserPosition{
+            UserId = item.UserId,
+            PosX = item.PosX,
+            PosY = item.PosY
+            });
       }
 
       return room;

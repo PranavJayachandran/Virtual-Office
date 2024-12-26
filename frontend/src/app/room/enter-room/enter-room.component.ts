@@ -23,7 +23,6 @@ export class EnterRoomComponent {
   constructor(
     private router: Router,
     private enterRoomService: EnterRoomService,
-    private globalService: GlobalDataService
   ) {}
 
   public joinRoom() {

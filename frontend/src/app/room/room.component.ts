@@ -8,6 +8,7 @@ import { Room } from '../shared/common.interface';
 import { PhaserGame } from './canvas/canvas.component';
 import { BridgeEvents, BridgeService } from './canvas/bridge';
 import { PhaserEventBus, PhaserEvents } from './canvas/phaserEventBus';
+import { UserService } from '../core/user.service';
 const length = 30;
 const width = 30;
 @Component({
@@ -28,11 +29,11 @@ export class RoomComponent implements OnInit {
   constructor(
     private activeRoute: ActivatedRoute,
     private roomService: RoomService,
-    private globalService: GlobalDataService,
-    private bridge: BridgeService
+    private bridge: BridgeService,
+    private userService: UserService
   ) {}
   ngOnInit(): void {
-    this.userId = this.globalService.getData(GlobalMapKeys.UserId) ?? '';
+    this.userId = this.userService.getUserId() ?? '';
     this.setRoomId();
     this.roomService.connect(this.roomId);
     this.bridge.on(BridgeEvents.SceneReady).subscribe(() => {
