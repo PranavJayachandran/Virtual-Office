@@ -5,7 +5,7 @@ import { Injectable } from "@angular/core";
 })
 export class UserService{
     public saveUserId(userId: string){
-        window.localStorage.setItem("UserId",userId);      
+        window.localStorage.setItem("UserId",userId);
     }
     public getUserId(){
         return window.localStorage.getItem("UserId")?? "";

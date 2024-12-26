@@ -8,8 +8,8 @@ import { Observable } from 'rxjs';
 export class SignUpRightPaneService {
   public backendBaseUrl = environment.backendBaseUrl;
   constructor(private http: HttpClient) {}
-  public signUp(user: User): Observable<any>{
-    return this.http.post(this.backendBaseUrl + '/auth/sign-up', user, {
+  public signUp(user: User): Observable<string>{
+    return this.http.post<string>(this.backendBaseUrl + '/auth/sign-up', user, {
       headers: { 'Content-Type': 'application/json' },
     });
   }

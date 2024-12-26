@@ -14,6 +14,7 @@ import {
   GlobalDataService,
   GlobalMapKeys,
 } from '../../core/global.data.service';
+import {UserService} from "../../core/user.service";
 
 @Component({
   selector: 'app-sign-up-right-pane',
@@ -27,7 +28,7 @@ export class SignUpRightPaneComponent {
   constructor(
     private signUpService: SignUpRightPaneService,
     private router: Router,
-    private globalService: GlobalDataService
+    private userService: UserService,
   ) {}
   public signUpForm = new FormGroup({
     userName: new FormControl(''),
@@ -42,8 +43,8 @@ export class SignUpRightPaneComponent {
       password: this.signUpForm.value.password || '',
     };
     this.signUpService.signUp(user).subscribe(
-      (data: { id: string }) => {
-        this.globalService.addData(GlobalMapKeys.UserId, data.id);
+      (id: string) => {
+        this.userService.saveUserId(id);
         this.router.navigate(['enter-room']);
       },
       (err) => {

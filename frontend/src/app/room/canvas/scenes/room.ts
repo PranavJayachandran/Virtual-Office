@@ -25,6 +25,10 @@ export class Room extends Scene {
   currentUser = '';
   players!: Phaser.Physics.Arcade.Group;
   playersList: IPlayerCharacter[] = [];
+
+  //If there is any player in the neighbourhood of the current player, this would have their value, else should be null.
+  playerAround : IPlayerCharacter | null = null;
+
   constructor() {
     super('Room');
   }
@@ -109,9 +113,9 @@ export class Room extends Scene {
     this.colliding = this.physics.add.staticGroup();
     this.players = this.physics.add.group();
     this.nonColliding = this.physics.add.group();
-
     this.physics.world.enable(this.colliding);
     this.createGroupArea();
+    this.physics.world.setBounds(0, 0, 1000,1000);
     this.camera = this.cameras.main;
     this.createPrivateArea();
     userMovementAnimation(this, 'dude');
@@ -119,6 +123,7 @@ export class Room extends Scene {
     PhaserEventBus.emit(PhaserEvents.RoomReady, this);
   }
   public override update() {
+    this.checkIfUserAround();
     if (this.player && !this.player.getData(IS_MOVING)) {
       this.cursors = this.input.keyboard?.createCursorKeys()!;
 
@@ -136,6 +141,25 @@ export class Room extends Scene {
         moveCurrentPlayer(this.player, Direction.Down);
       } else {
         this.player.setVelocityY(0);
+      }
+    }
+  }
+
+  private checkIfUserAround(){
+    //first check if the already set playerAround is still a neightbour. If yes return, else set it to null and find a new one.
+    if(this.playerAround && this.playerAround.player && this.playerAround.player.x && this.playerAround.player.y &&  Math.abs(this.playerAround.player.x - this.player.x) <= boxWidth || Math.abs(this.playerAround.player.y - this.player.y) <= boxHeight){
+      return;
+    }
+    console.log("HERE",this.playerAround);
+    this.playerAround = null;
+
+    for(const player of this.playersList){
+      if(player.userId != this.currentUser){
+        if(Math.abs(player.player.x - this.player.x) <= boxWidth || Math.abs(player.player.y - this.player.y) <= boxHeight){
+          this.playerAround = player;
+          console.log(player);
+          return;
+        }
       }
     }
   }
