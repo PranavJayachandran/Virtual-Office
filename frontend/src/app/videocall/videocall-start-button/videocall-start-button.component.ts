@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { VideoCallService } from '../videocall.service';
 
 @Component({
   selector: 'app-videocall-start-button',
@@ -11,11 +12,12 @@ export class VideocallStartButtonComponent {
   @Input() neighbourUserId: string = "";
   @Output() neighbourUserIdChange = new EventEmitter<string>();
 
-  public enterVideoCall(){
-    
+  constructor(private videoCallService: VideoCallService) { }
+  public enterVideoCall() {
+    this.videoCallService.acceptVideoCallRequest(this.neighbourUserId);
   }
 
-  public close(){
+  public close() {
     this.neighbourUserId = "";
     this.neighbourUserIdChange.emit(this.neighbourUserId);
   }

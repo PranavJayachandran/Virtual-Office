@@ -1,6 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { slideInOut } from '../../shared/animations/slideinout';
 import { User } from '../../shared/common.interface';
+import { HubOutgoingEventEnums, HubService } from '../../core/hub';
+import { VideoCallService } from '../videocall.service';
+import { EventBusEvents, EventBusService } from '../../core/eventbus';
 
 @Component({
   selector: 'app-videocall-request-toaster',
@@ -11,8 +14,11 @@ import { User } from '../../shared/common.interface';
   animations: [slideInOut]
 })
 export class VideocallRequestToasterComponent implements OnInit {
-  @Input() user: User | null = null;
+  @Input() userId: string = "";
+  @Input() connectionId: string = "";
   destroySelf!: () => void;
+
+  constructor(private eventBus: EventBusService){}
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -23,6 +29,6 @@ export class VideocallRequestToasterComponent implements OnInit {
     this.destroySelf();
   }
   acceptVideoCallRequest() {
-    ;
+    this.eventBus.broadcast(EventBusEvents.ConnectionId, this.connectionId);
   }
 }

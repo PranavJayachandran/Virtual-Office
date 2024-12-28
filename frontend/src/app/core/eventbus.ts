@@ -3,10 +3,10 @@ import { User } from "../shared/common.interface";
 import { Subject } from "rxjs";
 
 export enum EventBusEvents {
-  VideoCallInvite
+  ConnectionId
 }
 interface EventBusTypes {
-  [EventBusEvents.VideoCallInvite]: User;
+  [EventBusEvents.ConnectionId]: string;
 }
 
 @Injectable({

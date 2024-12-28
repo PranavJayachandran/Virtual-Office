@@ -9,6 +9,7 @@ import { User } from "../shared/common.interface";
 export enum HubOutgoingEventEnums {
     JoinRoom = "JoinRoom",
     SendMessageToRoom = "SendMessageToRoom",
+    SendVideoCallRequest = "SendVideoCallRequest"
 }
 
 export enum HubIncomingEventEnums {
@@ -18,7 +19,7 @@ export enum HubIncomingEventEnums {
 
 interface HubIncomingEventTypes {
     [HubIncomingEventEnums.UserMovement]: IUserMovement,
-    [HubIncomingEventEnums.VideoCallRequest]: User
+    [HubIncomingEventEnums.VideoCallRequest]: string
 }
 
 @Injectable({
@@ -27,7 +28,7 @@ interface HubIncomingEventTypes {
 export class HubService {
     private hubConnection!: signalR.HubConnection;
     private event: any = {};
-
+    private isConnected = false;
     constructor(private eventBus: EventBusService) {
         this.hubConnection = new signalR.HubConnectionBuilder()
             .withUrl(environment.socketUrl + "/roomHub")
@@ -38,17 +39,28 @@ export class HubService {
     private startHub() {
         this.hubConnection.start().then(() => {
             this.listenAsync();
+            this.isConnected = true;
         });
     }
 
-    public invokeAsync(key: HubOutgoingEventEnums, ...data: any[]) {
-        this.hubConnection.invoke(key, data);
+    public async invokeAsync(key: HubOutgoingEventEnums, ...data: any[]) {
+        if(!this.isConnected){
+            await new Promise(res => setTimeout(res,3000));
+        }
+        if (data.length == 3) {
+            this.hubConnection.invoke(key, data[0], data[1], data[2]);
+        }
+        else if (data.length == 2) {
+            this.hubConnection.invoke(key, data[0], data[1]);
+        }
+        else
+            this.hubConnection.invoke(key, data);
     }
 
     private listenAsync() {
         const enumKeys = Object.values(HubIncomingEventEnums) as (keyof HubIncomingEventTypes)[];
         for (let val of enumKeys) {
-            this.hubConnection.on(val, (connectionId: string, data: HubIncomingEventTypes[typeof val]) => {
+            this.hubConnection.on(val, (...data: any[]) => {
                 if (!this.event[val]) {
                     this.event[val] = new Subject<HubIncomingEventTypes[typeof val]>();
                 }

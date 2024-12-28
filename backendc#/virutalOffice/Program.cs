@@ -38,6 +38,7 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureCreated();
 }
 app.UseCors("CorsPolicy");
-app.MapHub<RoomHub>("/roomHub"); 
+app.MapHub<RoomHub>("/roomHub");
+app.MapHub<VideoCallHub>("/videoCallHub");
 app.MapControllers();
 app.Run();

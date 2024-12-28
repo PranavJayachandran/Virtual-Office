@@ -31,7 +31,8 @@ export class RoomComponent implements OnInit {
     private activeRoute: ActivatedRoute,
     private roomService: RoomService,
     private bridge: BridgeService,
-    private userService: UserService
+    private userService: UserService,
+    private globalService: GlobalDataService
   ) {}
   ngOnInit(): void {
     this.userId = this.userService.getUserId() ?? '';
@@ -61,5 +62,6 @@ export class RoomComponent implements OnInit {
   private setRoomId() {
     const snapShot = this.activeRoute.snapshot.queryParams;
     this.roomId = snapShot['roomId'] || '';
+    this.globalService.addData(GlobalMapKeys.RoomId, this.roomId);
   }
 }

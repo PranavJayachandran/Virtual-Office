@@ -5,11 +5,14 @@ import { UserService } from './user.service';
 export enum GlobalMapKeys {
   UserId,
   Room,
+  RoomId
 }
 
 interface GlobalMapTypes {
   [GlobalMapKeys.UserId]: string;
   [GlobalMapKeys.Room]: Room;
+  [GlobalMapKeys.RoomId]: string;
+
 }
 
 @Injectable({
