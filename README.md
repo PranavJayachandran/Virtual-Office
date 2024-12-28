@@ -7,7 +7,6 @@ My try to get a bare-bones implementation of gather.com
 - **Interactive Environment**: Navigate a virtual office built with Phaser.
 
 ## Technology Stack
-
 ### Frontend
 - **Angular**: Provides a dynamic, responsive user interface.
 
@@ -19,6 +18,10 @@ My try to get a bare-bones implementation of gather.com
 
 ### Game Engine
 - **Phaser**: Creates the interactive virtual office environment.
+
+## Database
+![Untitled(1)](https://github.com/user-attachments/assets/c681543e-580d-4020-9a09-e8ddb3ec6e37)
+
 
 ## Installation and Setup
 
@@ -55,6 +58,7 @@ My try to get a bare-bones implementation of gather.com
 
 5. **Run the Application**
    - Open your browser and navigate to `http://localhost:4200` for the frontend.
+
 
 ## Project Structure
 
