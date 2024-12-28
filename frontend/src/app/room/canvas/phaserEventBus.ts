@@ -9,5 +9,6 @@ export enum PhaserEvents{
     RoomReady = 'Room Ready',
     RoomData = 'Room Data',
     UserMovement = 'UserMovement',
-    OtherUserMovement = 'OtherUserMovement'
+    OtherUserMovement = 'OtherUserMovement',
+    UserInNeighBourHood = "UserInNeighBourHood",
 }

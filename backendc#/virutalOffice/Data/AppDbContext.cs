@@ -35,9 +35,9 @@ public class AppDbContext: DbContext{
             .HasForeignKey(ru => ru.UserId);
 
           modelBuilder.Entity<RoomUserDTO>()
-            .HasCheckConstraint("RoomUserDTo_PosX_Positive", "[PosX] >= 0");
+            .HasCheckConstraint("RoomUserDTo_PosX_Positive", "\"PosX\" >= 0");
           modelBuilder.Entity<RoomUserDTO>()
-            .HasCheckConstraint("RoomUserDTO_PosY_Positive", "[PosY] >= 0");
+            .HasCheckConstraint("RoomUserDTO_PosY_Positive", "\"PosY\" >= 0");
 
 
 

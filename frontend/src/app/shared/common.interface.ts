@@ -10,6 +10,7 @@ export interface Room{
 }
 export interface RoomMember{
     userId: string;
+    username: string,
     x: number;
     y: number;
     direction: string

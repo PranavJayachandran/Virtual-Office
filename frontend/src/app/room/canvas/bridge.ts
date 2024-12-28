@@ -9,12 +9,14 @@ export enum BridgeEvents {
   SceneReady,
   UserMovement,
   OtherUserMovement,
+  UserInNeighbourHood
 }
 interface BridgeEventTypes {
   [BridgeEvents.RoomData]: { roomData: Room; userId: string };
   [BridgeEvents.SceneReady]: void;
   [BridgeEvents.UserMovement]: IUserMovement;
   [BridgeEvents.OtherUserMovement]: IOtherUserMovement;
+  [BridgeEvents.UserInNeighbourHood]: {userId: string}
 }
 @Injectable({
   providedIn: 'root',
@@ -30,6 +32,9 @@ export class BridgeService {
     PhaserEventBus.on(PhaserEvents.UserMovement, (data: IUserMovement) => {
       this.event[BridgeEvents.UserMovement]?.next(data);
     });
+    PhaserEventBus.on(PhaserEvents.UserInNeighBourHood, (data:{userId: string}) => {
+      this.event[BridgeEvents.UserInNeighbourHood]?.next(data);
+    })
   }
 
   broadcast<K extends keyof BridgeEventTypes>(

@@ -8,5 +8,8 @@ namespace VirtualOffice.Application
         public async Task<User> GetUser(User user){
             return await userRepository.GetUser(user);
         }
+        public async Task<User> GetUser(int userId){
+            return await userRepository.GetUser(userId);
+        }
     }
 }

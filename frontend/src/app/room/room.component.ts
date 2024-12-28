@@ -9,12 +9,13 @@ import { PhaserGame } from './canvas/canvas.component';
 import { BridgeEvents, BridgeService } from './canvas/bridge';
 import { PhaserEventBus, PhaserEvents } from './canvas/phaserEventBus';
 import { UserService } from '../core/user.service';
+import { VideocallComponent } from "./videocall/videocall.component";
 const length = 30;
 const width = 30;
 @Component({
   selector: 'app-room',
   standalone: true,
-  imports: [CommonModule, PhaserGame],
+  imports: [CommonModule, PhaserGame, VideocallComponent],
   templateUrl: './room.component.html',
   styleUrl: './room.component.scss',
   providers: [RoomService],
@@ -46,11 +47,9 @@ export class RoomComponent implements OnInit {
       });
     });
     this.bridge.on(BridgeEvents.UserMovement).subscribe((data: IUserMovement)=>{
-      console.log("Sending data",data);
       this.roomService.sendMessage(data);
     })
     this.roomService.socket$.subscribe((data: IOtherUserMovement) => {
-      console.log("Revie", data);
       this.bridge.broadcast(
         BridgeEvents.OtherUserMovement,
         data,

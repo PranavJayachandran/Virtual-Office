@@ -43,7 +43,6 @@ export class Room extends Scene {
 
     PhaserEventBus.on(PhaserEvents.RoomData, (data: any) => {
       const roomData = data.roomData;
-      console.log(roomData);
       this.currentUser = data.userId;
       roomData.userIds.forEach((element: any) => {
         const text = this.add.text(0, 0, element.userId);
@@ -92,7 +91,6 @@ export class Room extends Scene {
             (player: IPlayerCharacter) => data.userId === player.userId
           );
           if (player) {
-        console.log("REcioed",data,player.player.x, player.player.y);
             movePlayer(
               this,
               player.player,
@@ -147,17 +145,17 @@ export class Room extends Scene {
 
   private checkIfUserAround(){
     //first check if the already set playerAround is still a neightbour. If yes return, else set it to null and find a new one.
-    if(this.playerAround && this.playerAround.player && this.playerAround.player.x && this.playerAround.player.y &&  Math.abs(this.playerAround.player.x - this.player.x) <= boxWidth || Math.abs(this.playerAround.player.y - this.player.y) <= boxHeight){
+    if(this.playerAround && this.playerAround.player && this.playerAround.player.x && this.playerAround.player.y &&  (Math.abs(this.playerAround.player.x - this.player.x) <= boxWidth && Math.abs(this.playerAround.player.y - this.player.y) <= boxHeight)){
       return;
     }
-    console.log("HERE",this.playerAround);
+    debugger;
     this.playerAround = null;
 
     for(const player of this.playersList){
       if(player.userId != this.currentUser){
-        if(Math.abs(player.player.x - this.player.x) <= boxWidth || Math.abs(player.player.y - this.player.y) <= boxHeight){
+        if(Math.abs(player.player.x - this.player.x) <= boxWidth && Math.abs(player.player.y - this.player.y) <= boxHeight){
+
           this.playerAround = player;
-          console.log(player);
           return;
         }
       }

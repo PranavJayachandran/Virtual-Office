@@ -41,7 +41,6 @@ export const movePlayer = (
 
    // Apply velocity
   player.setVelocity(xVelocity, yVelocity);
-  console.log("Moving player", player.x, player.y, direction);
   // Add a timed event to stop movement
   scene.time.addEvent({
     delay: timePerStep,
@@ -82,7 +81,6 @@ export const directionResolver = (
   posx: number,
   posy: number
 ): Direction => {
-  console.log(oldx, oldy, posx, posy);
   if (oldx == posx) {
     return posy > oldy ? Direction.Down : Direction.Up;
   }
