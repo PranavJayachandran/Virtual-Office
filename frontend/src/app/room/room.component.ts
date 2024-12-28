@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Box, IOtherUserMovement, IUserMovement } from './room.interface';
+import { Box, IUserMovement } from './room.interface';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { RoomService } from './room.service';
@@ -9,7 +9,7 @@ import { PhaserGame } from './canvas/canvas.component';
 import { BridgeEvents, BridgeService } from './canvas/bridge';
 import { PhaserEventBus, PhaserEvents } from './canvas/phaserEventBus';
 import { UserService } from '../core/user.service';
-import { VideocallComponent } from "./videocall/videocall.component";
+import { VideocallComponent } from '../videocall/videocall.component';
 const length = 30;
 const width = 30;
 @Component({
@@ -49,7 +49,7 @@ export class RoomComponent implements OnInit {
     this.bridge.on(BridgeEvents.UserMovement).subscribe((data: IUserMovement)=>{
       this.roomService.sendMessage(data);
     })
-    this.roomService.socket$.subscribe((data: IOtherUserMovement) => {
+    this.roomService.socket$.subscribe((data: IUserMovement) => {
       this.bridge.broadcast(
         BridgeEvents.OtherUserMovement,
         data,

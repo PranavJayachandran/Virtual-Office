@@ -104,10 +104,10 @@ export const moveCurrentPlayer = (player: Phaser.Physics.Arcade.Sprite, directio
       : 0;
 
     PhaserEventBus.emit(PhaserEvents.UserMovement, {
-      posx: Math.round(
+      posX: Math.round(
         (player.x + (xVelocity * timePerStep/(1000))) / boxWidth
       ),
-      posy: Math.round(
+      posY: Math.round(
         (player.y + (yVelocity * (timePerStep)/1000)) / boxHeight
       ),
     });

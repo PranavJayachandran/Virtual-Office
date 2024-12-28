@@ -3,12 +3,8 @@ export interface Box {
   color: string;
   hasFurniture: boolean;
 }
-export interface IOtherUserMovement {
+export interface IUserMovement {
   posX: number;
   posY: number;
   userId: string;
-}
-export interface IUserMovement {
-  posx: number;
-  posy: number;
 }

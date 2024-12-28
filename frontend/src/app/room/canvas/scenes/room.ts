@@ -12,7 +12,7 @@ import { Direction } from '../enums/direction';
 import { assets } from '../constants/assets';
 import { createPlayer } from '../helpers/player';
 import { GlobalMapKeys } from '../../../core/global.data.service';
-import { IOtherUserMovement } from '../../room.interface';
+import { IUserMovement } from '../../room.interface';
 import { IPlayerCharacter } from '../interfaces/player.interface';
 
 export class Room extends Scene {
@@ -86,7 +86,7 @@ export class Room extends Scene {
 
       PhaserEventBus.on(
         PhaserEvents.OtherUserMovement,
-        (data: IOtherUserMovement) => {
+        (data: IUserMovement) => {
           const player = this.playersList.find(
             (player: IPlayerCharacter) => data.userId === player.userId
           );

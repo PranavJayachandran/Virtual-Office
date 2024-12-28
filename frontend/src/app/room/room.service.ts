@@ -4,13 +4,13 @@ import { GlobalDataService, GlobalMapKeys } from '../core/global.data.service';
 import { HttpClient } from '@angular/common/http';
 import { Room } from '../shared/common.interface';
 import { environment } from '../environment/environment';
-import { IOtherUserMovement, IUserMovement } from './room.interface';
+import { IUserMovement } from './room.interface';
 import * as signalR from '@microsoft/signalr';
 import { UserService } from '../core/user.service';
 
 @Injectable()
 export class RoomService {
-  public socket$: Subject<IOtherUserMovement> = new Subject();
+  public socket$: Subject<IUserMovement> = new Subject();
   private socket!: WebSocket;
   private hubConnection!: signalR.HubConnection;
   private currentRoom: string = '';
@@ -35,8 +35,8 @@ export class RoomService {
   public sendMessage(userMovementData: IUserMovement) {
     this.hubConnection.invoke('SendMessageToRoom', this.currentRoom, {
       UserId: parseInt(this.userService.getUserId()),
-      PosX: userMovementData.posx,
-      PosY: userMovementData.posy,
+      PosX: userMovementData.posX,
+      PosY: userMovementData.posY,
     });
   }
 
