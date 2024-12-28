@@ -5,6 +5,7 @@ import {
   timePerStep,
 } from '../constants/constants';
 import { Direction } from '../enums/direction';
+import { IPlayerCharacter } from '../interfaces/player.interface';
 import { PhaserEventBus, PhaserEvents } from '../phaserEventBus';
 import { Room } from '../scenes/room';
 
@@ -87,7 +88,7 @@ export const directionResolver = (
   return posx > oldx ? Direction.Right : Direction.Left;
 };
 
-export const moveCurrentPlayer = (player: Phaser.Physics.Arcade.Sprite, direction: Direction) => {
+export const moveCurrentPlayer = (player: Phaser.Physics.Arcade.Sprite, direction: Direction, playerList: IPlayerCharacter[]) => {
   const velocity = boxHeight * (1000 / timePerStep); // Speed per second
   const xVelocity =
     direction === Direction.Left
@@ -102,12 +103,19 @@ export const moveCurrentPlayer = (player: Phaser.Physics.Arcade.Sprite, directio
       : direction === Direction.Down
       ? velocity
       : 0;
+  
 
+  for(let val of playerList){
+    if(((player.x + (xVelocity * timePerStep/(1000))) / boxWidth == val.player.x/boxWidth) && ((player.y + (yVelocity * timePerStep/(1000))) / boxHeight == val.player.y/boxHeight))
+      return;
+  }
+
+    
     PhaserEventBus.emit(PhaserEvents.UserMovement, {
-      posx: Math.round(
+      posX: Math.round(
         (player.x + (xVelocity * timePerStep/(1000))) / boxWidth
       ),
-      posy: Math.round(
+      posY: Math.round(
         (player.y + (yVelocity * (timePerStep)/1000)) / boxHeight
       ),
     });

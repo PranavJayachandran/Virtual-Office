@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { PhaserEventBus, PhaserEvents } from './phaserEventBus';
 import { Room } from '../../shared/common.interface';
-import { IOtherUserMovement, IUserMovement } from '../room.interface';
+import { IUserMovement } from '../room.interface';
 
 export enum BridgeEvents {
   RoomData,
@@ -15,7 +15,7 @@ interface BridgeEventTypes {
   [BridgeEvents.RoomData]: { roomData: Room; userId: string };
   [BridgeEvents.SceneReady]: void;
   [BridgeEvents.UserMovement]: IUserMovement;
-  [BridgeEvents.OtherUserMovement]: IOtherUserMovement;
+  [BridgeEvents.OtherUserMovement]: IUserMovement;
   [BridgeEvents.UserInNeighbourHood]: {userId: string}
 }
 @Injectable({

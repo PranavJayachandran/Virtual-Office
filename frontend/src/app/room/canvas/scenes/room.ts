@@ -12,7 +12,7 @@ import { Direction } from '../enums/direction';
 import { assets } from '../constants/assets';
 import { createPlayer } from '../helpers/player';
 import { GlobalMapKeys } from '../../../core/global.data.service';
-import { IOtherUserMovement } from '../../room.interface';
+import { IUserMovement } from '../../room.interface';
 import { IPlayerCharacter } from '../interfaces/player.interface';
 
 export class Room extends Scene {
@@ -27,7 +27,7 @@ export class Room extends Scene {
   playersList: IPlayerCharacter[] = [];
 
   //If there is any player in the neighbourhood of the current player, this would have their value, else should be null.
-  playerAround : IPlayerCharacter | null = null;
+  playerAround: IPlayerCharacter | null = null;
 
   constructor() {
     super('Room');
@@ -66,27 +66,27 @@ export class Room extends Scene {
         this.playersList.push({ userId: element.userId, player });
       });
 
-     // PhaserEventBus.on(
-     //   PhaserEvents.OtherUserMovement,
-     //   (data: IOtherUserMovement) => {
-     //     if (data.userId == this.currentUser) return;
-     //     const player = this.playersList.filter(
-     //       (player: IPlayerCharacter) => data.userId === player.userId
-     //     );
-     //     if (player.length) {
-     //       this.physics.moveTo(
-     //         player[0].player,
-     //         Math.round(player[0].player.x / boxWidth),
-     //         Math.round(player[0].player.y / boxHeight),
-     //         1000
-     //       );
-     //     }
-     //   }
-     // );
+      // PhaserEventBus.on(
+      //   PhaserEvents.OtherUserMovement,
+      //   (data: IOtherUserMovement) => {
+      //     if (data.userId == this.currentUser) return;
+      //     const player = this.playersList.filter(
+      //       (player: IPlayerCharacter) => data.userId === player.userId
+      //     );
+      //     if (player.length) {
+      //       this.physics.moveTo(
+      //         player[0].player,
+      //         Math.round(player[0].player.x / boxWidth),
+      //         Math.round(player[0].player.y / boxHeight),
+      //         1000
+      //       );
+      //     }
+      //   }
+      // );
 
       PhaserEventBus.on(
         PhaserEvents.OtherUserMovement,
-        (data: IOtherUserMovement) => {
+        (data: IUserMovement) => {
           const player = this.playersList.find(
             (player: IPlayerCharacter) => data.userId === player.userId
           );
@@ -113,7 +113,7 @@ export class Room extends Scene {
     this.nonColliding = this.physics.add.group();
     this.physics.world.enable(this.colliding);
     this.createGroupArea();
-    this.physics.world.setBounds(0, 0, 1000,1000);
+    this.physics.world.setBounds(0, 0, 1000, 1000);
     this.camera = this.cameras.main;
     this.createPrivateArea();
     userMovementAnimation(this, 'dude');
@@ -126,36 +126,39 @@ export class Room extends Scene {
       this.cursors = this.input.keyboard?.createCursorKeys()!;
 
       if (this.cursors.left.isDown) {
-        moveCurrentPlayer(this.player, Direction.Left);
+        moveCurrentPlayer(this.player, Direction.Left, this.playersList);
       } else if (this.cursors.right.isDown) {
-        moveCurrentPlayer(this.player, Direction.Right);
+        moveCurrentPlayer(this.player, Direction.Right, this.playersList);
       } else {
         this.player.setVelocityX(0);
       }
 
       if (this.cursors.up.isDown) {
-        moveCurrentPlayer(this.player, Direction.Up);
+        moveCurrentPlayer(this.player, Direction.Up, this.playersList);
       } else if (this.cursors.down.isDown) {
-        moveCurrentPlayer(this.player, Direction.Down);
+        moveCurrentPlayer(this.player, Direction.Down, this.playersList);
       } else {
         this.player.setVelocityY(0);
       }
     }
   }
 
-  private checkIfUserAround(){
+  private checkIfUserAround() {
     //first check if the already set playerAround is still a neightbour. If yes return, else set it to null and find a new one.
-    if(this.playerAround && this.playerAround.player && this.playerAround.player.x && this.playerAround.player.y &&  (Math.abs(this.playerAround.player.x - this.player.x) <= boxWidth && Math.abs(this.playerAround.player.y - this.player.y) <= boxHeight)){
+    if (this.playerAround && this.playerAround.player && this.playerAround.player.x && this.playerAround.player.y && (Math.abs(this.playerAround.player.x - this.player.x) <= boxWidth && Math.abs(this.playerAround.player.y - this.player.y) <= boxHeight)) {
       return;
     }
-    debugger;
-    this.playerAround = null;
 
-    for(const player of this.playersList){
-      if(player.userId != this.currentUser){
-        if(Math.abs(player.player.x - this.player.x) <= boxWidth && Math.abs(player.player.y - this.player.y) <= boxHeight){
+    if (this.playerAround != null){
+      this.playerAround = null;
+      PhaserEventBus.emit(PhaserEvents.UserInNeighBourHood, {userId: ""});
+    }
 
+    for (const player of this.playersList) {
+      if (player.userId != this.currentUser) {
+        if (Math.abs(player.player.x - this.player.x) <= boxWidth && Math.abs(player.player.y - this.player.y) <= boxHeight) {
           this.playerAround = player;
+          PhaserEventBus.emit(PhaserEvents.UserInNeighBourHood, this.playerAround)
           return;
         }
       }
