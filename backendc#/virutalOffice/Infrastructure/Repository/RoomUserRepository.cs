@@ -36,7 +36,6 @@ namespace VirtualOffice.Application
 
     public async Task MoveUserInRoom(int roomId, int userId, int posX, int posY){
       var dto = await dbContext.RoomUser.FirstOrDefaultAsync((el) => el.UserId == userId && el.RoomId == roomId);
-      Console.WriteLine(dto.UserId.ToString(), "Moving user");
       if(dto != null){
         dto.PosY = posY;
         dto.PosX = posX;
